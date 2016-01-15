@@ -28,9 +28,11 @@ $(document).ready(function() {
     }
     $("#contents").append(sys + "<br/>");
     //刷新用户在线列表
-    flushUsers(data.users);
+    // flushUsers(data.users);
     //显示正在对谁说话
     showSayTo();
+    //刷新当前房价用户在线列表
+    flushUsersInRoom(data.usersInRoom)
   });
 
 
@@ -52,7 +54,10 @@ $(document).ready(function() {
     var sys = '<div style="color:#f00">系统(' + now() + '):' + '用户 ' + data.user + ' 离开了房间！</div>';
     $("#contents").append(sys + "<br/>");
     //刷新用户在线列表
-    flushUsers(data.users);
+    // flushUsers(data.users);
+    //刷新当前房价用户在线列表
+    flushUsersInRoom(data.usersInRoom)
+
     //如果正对某人聊天，该人却下线了
     if (data.user == to) {
       to = "all";
@@ -91,6 +96,30 @@ $(document).ready(function() {
         to = $(this).attr('alt');
         //清除之前的选中效果
         $("#list > li").removeClass('sayingto');
+        //给被双击的用户添加选中效果
+        $(this).addClass('sayingto');
+        //刷新正在对谁说话
+        showSayTo();
+      }
+    });
+  }
+
+  //刷新当前房间用户在线列表
+  function flushUsersInRoom(users) {
+    //清空之前用户列表，添加 "所有人" 选项并默认为灰色选中效果
+    $("#listInRoom").empty().append('<li title="双击聊天" alt="all" class="sayingto" onselectstart="return false">当前房间</li>');
+    //遍历生成用户在线列表
+    for (var i in users) {
+      $("#listInRoom").append('<li alt="' + users[i] + '" title="双击聊天" onselectstart="return false">' + users[i] + '</li>');
+    }
+    //双击对某人聊天
+    $("#listInRoom > li").dblclick(function() {
+      //如果不是双击的自己的名字
+      if ($(this).attr('alt') != from) {
+        //设置被双击的用户为说话对象
+        to = $(this).attr('alt');
+        //清除之前的选中效果
+        $("#listInRoom > li").removeClass('sayingto');
         //给被双击的用户添加选中效果
         $(this).addClass('sayingto');
         //刷新正在对谁说话

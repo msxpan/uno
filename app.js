@@ -30,7 +30,7 @@ if ('development' == app.get('env')) {
 }
 
 var users = {};//存储在线用户列表的对象
-var userrooms = {};//存储房间号
+var roomInfo = {};
 
 app.get('/', function (req, res) {
   if (req.cookies.user == null) {
@@ -85,7 +85,20 @@ io.sockets.on('connection', function (socket) {
   socket.on('online', function (data) {
     // 进入房间
     if (data.room) {
-      socket.join(data.room);
+
+      // 将用户名加入房间名单中
+      if (!roomInfo[data.room]) {
+        roomInfo[data.room] = [];
+      }
+      // 不重复保存
+      if (roomInfo[data.room].indexOf(data.user)<0) {
+        roomInfo[data.room].push(data.user);
+      };
+
+      if (io.sockets.clients().length<4) {
+        socket.join(data.room);
+        console.log(roomInfo[data.room]);
+      };
     };
 
     //将上线的用户名存储为 socket 对象的属性，以区分每个 socket 对象，方便后面使用
@@ -97,7 +110,7 @@ io.sockets.on('connection', function (socket) {
     //向所有用户广播该用户上线信息
     // io.sockets.emit('online', {users: users, user: data.user});
     //向房间用户广播该用户进入房间信息
-    io.sockets.to(data.room).emit('online', {users: users, user: data.user});
+    io.sockets.to(data.room).emit('online', {users: users, user: data.user,usersInRoom:roomInfo[data.room]});
 
     //有人下线
     socket.on('disconnect', function() {
@@ -105,10 +118,14 @@ io.sockets.on('connection', function (socket) {
       if (users[socket.name]) {
         //从 users 对象中删除该用户名
         delete users[socket.name];
+
+        // 从房间中删除该用户名
+        roomInfo[data.room].remove(data.user);
+
         //向其他所有用户广播该用户下线信息
         // socket.broadcast.emit('offline', {users: users, user: socket.name});
         //向房间用户广播该用户离开信息
-        io.sockets.to(data.room).emit('offline', {users: users, user: socket.name});
+        io.sockets.to(data.room).emit('offline', {users: users, user: socket.name,usersInRoom:roomInfo[data.room]});
       }
     });
   });
@@ -140,3 +157,22 @@ io.sockets.on('connection', function (socket) {
 server.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
+
+
+
+Array.prototype.indexOf = function(val) {
+    for (var i = 0; i < this.length; i++) {
+        if (this[i] == val) return i;
+    }
+    return -1;
+};
+
+Array.prototype.remove = function(val) {
+    var index = this.indexOf(val);
+    if (index > -1) {
+        this.splice(index, 1);
+        return this;
+    }else{
+      return false;
+    }
+};
