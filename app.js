@@ -97,7 +97,7 @@ io.sockets.on('connection', function (socket) {
 
       if (io.sockets.clients().length<4) {
         socket.join(data.room);
-        console.log(roomInfo[data.room]);
+        // console.log(roomInfo[data.room]);
       };
     };
 
