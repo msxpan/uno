@@ -29,8 +29,13 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-var users = {};//存储在线用户列表的对象
+//存储在线用户列表的对象
+var users = {};
+// 存储房间信息
 var roomInfo = {};
+// 存储房间卡牌信息
+var roomUno = {};
+
 
 app.get('/', function (req, res) {
   if (req.cookies.user == null) {
@@ -42,7 +47,8 @@ app.get('/', function (req, res) {
     res.sendfile('views/index.html');
   }
 });
-  
+
+// 登录
 app.get('/signin', function (req, res) {
   res.sendfile('views/signin.html');
 });
@@ -58,7 +64,7 @@ app.post('/signin', function (req, res) {
   }
 });
 
-
+// 选择房间
 app.get('/hall', function (req, res) {
   res.sendfile('views/hall.html');
 });
@@ -69,6 +75,13 @@ app.post('/hall', function (req, res) {
 });
 
 
+// uno原始卡牌
+var unoOriginal=[
+    'r0','r1','r2','r3','r4','r5','r6','r7','r8','r9','r1','r2','r3','r4','r5','r6','r7','r8','r9',
+    'y0','y1','y2','y3','y4','y5','y6','y7','y8','y9','y1','y2','y3','y4','y5','y6','y7','y8','y9',
+    'b0','b1','b2','b3','b4','b5','b6','b7','b8','b9','b1','b2','b3','b4','b5','b6','b7','b8','b9',
+    'g0','g1','g2','g3','g4','g5','g6','g7','g8','g9','g1','g2','g3','g4','g5','g6','g7','g8','g9',
+];
 
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
@@ -86,6 +99,13 @@ io.sockets.on('connection', function (socket) {
     // 进入房间
     if (data.room) {
 
+      //将上线的用户名存储为 socket 对象的属性，以区分每个 socket 对象，方便后面使用
+      socket.name = data.user;
+      //users 对象中不存在该用户名则插入该用户名
+      if (!users[data.user]) {
+        users[data.user] = data.user;
+      }
+
       // 将用户名加入房间名单中
       if (!roomInfo[data.room]) {
         roomInfo[data.room] = [];
@@ -95,10 +115,38 @@ io.sockets.on('connection', function (socket) {
         roomInfo[data.room].push(data.user);
       };
 
-      if (io.sockets.clients().length<4) {
+      // 总人数
+      console.log('在线总人数：'+io.sockets.clients().length);
+      console.log(data.user+' 进入房间：'+data.room+'房间总人数：'+roomInfo[data.room].length);
+
+      if (roomInfo[data.room].length<=4) {
         socket.join(data.room);
-        // console.log(roomInfo[data.room]);
+      }else{
+        socket.emit('isFull','房间已满')
+      }
+
+      if (!roomUno[data.room]) {
+          roomUno[data.room]=[]
       };
+
+      if (roomInfo[data.room].length==2) { 
+          var unoRefresh=getArrayItems(unoOriginal,76);
+
+          // roomUno[data.room].push(getArrayItems(unoOriginal,76));
+          //查询房间内所有用户 给每个用户发初始牌          
+          io.sockets.clients().forEach(function (client,i) {
+            if (client.name == roomInfo[data.room][i]) {
+              //给房间内用户发牌
+              var userInitCard = unoRefresh.splice(0,7);
+              client.emit('initCard', '给'+client.name+'发牌发牌：'+userInitCard);
+              roomUno[data.room]=unoRefresh;
+            }
+          });
+
+          console.log('房间：'+data.room+' 玩家数：'+roomInfo[data.room].length+' 初始发牌剩余卡牌：'+roomUno[data.room].length);
+        }
+
+
     };
 
     //将上线的用户名存储为 socket 对象的属性，以区分每个 socket 对象，方便后面使用
@@ -176,3 +224,30 @@ Array.prototype.remove = function(val) {
       return false;
     }
 };
+
+
+// 洗牌
+function getArrayItems(arr, num) {
+    //新建一个数组,将传入的数组复制过来,用于运算,而不要直接操作传入的数组;
+    var temp_array = new Array();
+    for (var index in arr) {
+        temp_array.push(arr[index]);
+    }
+    //取出的数值项,保存在此数组
+    var return_array = new Array();
+    for (var i = 0; i<num; i++) {
+        //判断如果数组还有可以取出的元素,以防下标越界
+        if (temp_array.length>0) {
+            //在数组中产生一个随机索引
+            var arrIndex = Math.floor(Math.random()*temp_array.length);
+            //将此随机索引的对应的数组元素值复制出来
+            return_array[i] = temp_array[arrIndex];
+            //然后删掉此索引的数组元素,这时候temp_array变为新的数组
+            temp_array.splice(arrIndex, 1);
+        } else {
+            //数组中数据项取完后,退出循环,比如数组本来只有10项,但要求取出20项.
+            break;
+        }
+    }
+    return return_array;
+}

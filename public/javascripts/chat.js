@@ -19,6 +19,11 @@ $(document).ready(function() {
   var roomNum = $.cookie('room');
   socket.emit('online', {user: from,room:roomNum});
 
+  socket.on('isFull',function(){
+    window.location.href="hall"; 
+
+  })
+
   socket.on('online', function (data) {
     //显示系统消息
     if (data.user != from) {
@@ -35,6 +40,12 @@ $(document).ready(function() {
     flushUsersInRoom(data.usersInRoom)
   });
 
+
+  socket.on('initCard',function(data){
+    
+      $("#contents").append('<div>' + data + '</div><br />');
+
+  })
 
   socket.on('say', function (data) {
     //对所有人说
