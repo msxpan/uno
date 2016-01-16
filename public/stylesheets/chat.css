@@ -19,13 +19,23 @@
   bottom: 140px;
   right: 0;
 }
+
+#content_playing,
 #content_saying{
   position: absolute;
   left: 0;
   bottom: 0;
   height: 140px;
-  right: 0;
+  /*right: 0;*/
+  width: 50%;
 }
+
+#content_playing{
+  right: 0;
+  left: 50%;
+}
+
+
 #users_online{
   position: absolute;
   top: 0;
@@ -33,6 +43,8 @@
   bottom: 0;
   width: 200px;
 }
+
+#play_toolbar,
 #toolbar{
   position: absolute;
   top: 0;
@@ -119,6 +131,7 @@
   padding: 10px;
   overflow: auto;
 }
+#play_content,
 #input_content{
   position: absolute;
   top: 35px;
@@ -132,6 +145,14 @@
   background: #eee;
   background: rgba(0,0,0,0.1);
 }
+
+#play_content>a{
+  display: inline-block;
+  padding: 0 8px;
+}
+
+
+#playingto,
 #sayingto{
   background: #999;
   background: rgba(0,0,0,0.3);
@@ -153,6 +174,7 @@
   color:#39F;
   font-weight:bold
 }
+#play,
 #say{
   position: absolute;
   top: 35px;

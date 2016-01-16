@@ -129,7 +129,6 @@ io.sockets.on('connection', function (socket) {
           roomUno[data.room]=[]
       };
 
-      // 开始游戏 给用户发牌
       if (roomInfo[data.room].length==2) { 
           var unoRefresh=getArrayItems(unoOriginal,76);
 
@@ -139,15 +138,12 @@ io.sockets.on('connection', function (socket) {
             if (client.name == roomInfo[data.room][i]) {
               //给房间内用户发牌
               var userInitCard = unoRefresh.splice(0,7);
-              client.emit('initCard', '给'+client.name+'发牌发牌：'+userInitCard);
+              client.emit('initCard', {user:client.name,playerHands:userInitCard});
               roomUno[data.room]=unoRefresh;
             }
           });
-
           console.log('房间：'+data.room+' 玩家数：'+roomInfo[data.room].length+' 初始发牌剩余卡牌：'+roomUno[data.room].length);
         }
-
-
     };
 
     //将上线的用户名存储为 socket 对象的属性，以区分每个 socket 对象，方便后面使用
@@ -173,6 +169,7 @@ io.sockets.on('connection', function (socket) {
 
         //向其他所有用户广播该用户下线信息
         // socket.broadcast.emit('offline', {users: users, user: socket.name});
+        
         //向房间用户广播该用户离开信息
         io.sockets.to(data.room).emit('offline', {users: users, user: socket.name,usersInRoom:roomInfo[data.room]});
       }
@@ -184,6 +181,7 @@ io.sockets.on('connection', function (socket) {
     if (data.to == 'all') {
         //向其他所有用户广播该用户发话信息
         // socket.broadcast.emit('say', data);
+        
         //向房间内所有用户广播该用户发话信息
         io.sockets.to(data.room).emit('say', data);
     } else {
@@ -200,7 +198,21 @@ io.sockets.on('connection', function (socket) {
     }
   });
 
+  //有人出牌
+  socket.on('playAHand', function (data) {
+        console.log(data);
+        io.sockets.to(data.room).emit('playAHand', data);
+  });
 
+  // 主动摸牌
+  socket.on('touchCard', function (data) {
+        var newCard = roomUno[data.room]
+        var newOneCard=newCard.splice(0,1);
+        roomUno[data.room]=newCard;
+        console.log('用户'+data.from+'摸牌，剩余卡牌：'+roomUno[data.room].length+'张');
+        socket.emit('dealCard', newOneCard);
+  });
+  
 });
 
 server.listen(app.get('port'), function(){
@@ -208,7 +220,7 @@ server.listen(app.get('port'), function(){
 });
 
 
-
+// 数组操作
 Array.prototype.indexOf = function(val) {
     for (var i = 0; i < this.length; i++) {
         if (this[i] == val) return i;
