@@ -129,6 +129,7 @@ io.sockets.on('connection', function (socket) {
           roomUno[data.room]=[]
       };
 
+      // 开始游戏
       if (roomInfo[data.room].length==2) { 
           var unoRefresh=getArrayItems(unoOriginal,76);
 
