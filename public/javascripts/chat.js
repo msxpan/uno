@@ -222,7 +222,7 @@ $(document).ready(function() {
     if ($msg == "") return;
     //把发送的信息先添加到自己的浏览器 DOM 中
     if (to == "all") {
-      $("#contents").append('<div>你(' + now() + ')对 所有人 说：<br/>' + $msg + '</div><br />');
+      // $("#contents").append('<div>你(' + now() + ')对 所有人 说：<br/>' + $msg + '</div><br />');
     } else {
       $("#contents").append('<div style="color:#00f" >你(' + now() + ')对 ' + to + ' 说：<br/>' + $msg + '</div><br />');
     }
