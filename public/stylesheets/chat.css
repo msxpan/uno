@@ -11,6 +11,7 @@
   right: 200px;
   bottom: 0;
   left: 0;
+  width: 100%;
 }
 #content_show{
   position: absolute;
@@ -25,14 +26,15 @@
   position: absolute;
   left: 0;
   bottom: 0;
-  height: 140px;
+  height: 70px;
   /*right: 0;*/
   width: 50%;
 }
 
 #content_playing{
   right: 0;
-  left: 50%;
+  /*left: 50%;*/
+  width: 100%;
 }
 
 
@@ -42,6 +44,7 @@
   right: 0;
   bottom: 0;
   width: 200px;
+  height: 70px;
 }
 
 #play_toolbar,
@@ -121,7 +124,7 @@
 }
 #contents{
   position: absolute;
-  top: 755px;
+  top: 0px;
   left: 5px;
   right: 5px;
   bottom: 5px;
@@ -130,25 +133,28 @@
   border-radius: 5px;
   padding: 10px;
   overflow: auto;
+  height: 50px;
 }
 #play_content,
 #input_content{
   position: absolute;
-  top: 35px;
+  /*top: 35px;*/
   left: 5px;
   right: 105px;
-  bottom: 30px;
+  bottom: 0;
   border-top-left-radius: 5px;
   outline: none;
-  padding: 10px;
+  /*padding: 10px;*/
   overflow:auto;
   background: #eee;
   background: rgba(0,0,0,0.1);
+  height: 50px;
 }
 
 #play_content>a{
   display: inline-block;
   padding: 0 8px;
+  line-height: 50px;
 }
 
 
@@ -177,15 +183,15 @@
 #play,
 #say{
   position: absolute;
-  top: 35px;
+  /*top: 35px;*/
   right: 5px;
-  bottom: 5px;
+  bottom: 0;
   width: 100px;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
   cursor: pointer;
   text-align: center;
-  line-height: 100px;
+  line-height: 50px;
   font-size: 24px;
   font-weight: bolder;
   font-family: "幼圆","微软雅黑","黑体","宋体";
@@ -201,9 +207,10 @@
     display: block;
     text-align: center;
     height: 50px;
-    line-height: 50px;
+    line-height: 70px;
     background: #999999;
     border-radius: 5px;
-    margin-top: 5px;
     color: #fff;
+    height: 70px;
+    font-size: 20px;
 }

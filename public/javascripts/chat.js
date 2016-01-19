@@ -14,6 +14,9 @@ $(document).ready(function() {
   var sence = document.getElementById("sence");
   var ctx = sence.getContext("2d");
   
+  $('#sence').attr({"width":$(window).get(0).innerWidth,'height':$(window).get(0).innerHeight});  
+
+
   var cardArray = [];
 
   // 房间
@@ -116,16 +119,16 @@ $(document).ready(function() {
   }, false);
 
   // 对话
-  socket.on('say', function (data) {
-    //房间内广播
-    if (data.to == 'all') {
-      $("#contents").append('<div>' + data.from + '(' + now() + ')对 所有人 说：<br/>' + data.msg + '</div><br />');
-    }
-    //私信
-    if (data.to == from) {
-      $("#contents").append('<div style="color:#00f" >' + data.from + '(' + now() + ')对 你 说：<br/>' + data.msg + '</div><br />');
-    }
-  });
+  // socket.on('say', function (data) {
+  //   //房间内广播
+  //   if (data.to == 'all') {
+  //     $("#contents").append('<div>' + data.from + '(' + now() + ')对 所有人 说：<br/>' + data.msg + '</div><br />');
+  //   }
+  //   //私信
+  //   if (data.to == from) {
+  //     $("#contents").append('<div style="color:#00f" >' + data.from + '(' + now() + ')对 你 说：<br/>' + data.msg + '</div><br />');
+  //   }
+  // });
 
 
   socket.on('playAHand', function (data) {
@@ -201,27 +204,27 @@ $(document).ready(function() {
   //刷新当前房间用户在线列表
   function flushUsersInRoom(users) {
     //清空之前用户列表，添加 "所有人" 选项并默认为灰色选中效果
-    $("#listInRoom").empty().append('<li title="双击聊天" alt="all" class="sayingto" onselectstart="return false">当前房间</li>');
+    // $("#listInRoom").empty().append('<li title="双击聊天" alt="all" class="sayingto" onselectstart="return false">当前房间</li>');
 
-    //遍历生成用户在线列表
-    for (var i = 0; i < users.length; i++) {
-      $("#listInRoom").append('<li alt="' + users[i] + '" title="双击聊天" onselectstart="return false">' + users[i] + '</li>');
-    };
+    // //遍历生成用户在线列表
+    // for (var i = 0; i < users.length; i++) {
+    //   $("#listInRoom").append('<li alt="' + users[i] + '" title="双击聊天" onselectstart="return false">' + users[i] + '</li>');
+    // };
 
-    //双击对某人聊天
-    $("#listInRoom > li").dblclick(function() {
-      //如果不是双击的自己的名字
-      if ($(this).attr('alt') != from) {
-        //设置被双击的用户为说话对象
-        to = $(this).attr('alt');
-        //清除之前的选中效果
-        $("#listInRoom > li").removeClass('sayingto');
-        //给被双击的用户添加选中效果
-        $(this).addClass('sayingto');
-        //刷新正在对谁说话
-        showSayTo();
-      }
-    });
+    // //双击对某人聊天
+    // $("#listInRoom > li").dblclick(function() {
+    //   //如果不是双击的自己的名字
+    //   if ($(this).attr('alt') != from) {
+    //     //设置被双击的用户为说话对象
+    //     to = $(this).attr('alt');
+    //     //清除之前的选中效果
+    //     $("#listInRoom > li").removeClass('sayingto');
+    //     //给被双击的用户添加选中效果
+    //     $(this).addClass('sayingto');
+    //     //刷新正在对谁说话
+    //     showSayTo();
+    //   }
+    // });
   }
 
   //显示正在对谁说话
@@ -275,21 +278,21 @@ $(document).ready(function() {
   });
 
   //对话
-  $("#say").click(function() {
-    //获取要发送的信息
-    var $msg = $("#input_content").html();
-    if ($msg == "") return;
-    //把发送的信息先添加到自己的浏览器 DOM 中
-    if (to == "all") {
-      // $("#contents").append('<div>你(' + now() + ')对 所有人 说：<br/>' + $msg + '</div><br />');
-    } else {
-      $("#contents").append('<div style="color:#00f" >你(' + now() + ')对 ' + to + ' 说：<br/>' + $msg + '</div><br />');
-    }
-    //发送发话信息
-    socket.emit('say', {from: from, to: to, msg: $msg,room:roomNum});
-    //清空输入框并获得焦点
-    $("#input_content").html("").focus();
-  });
+  // $("#say").click(function() {
+  //   //获取要发送的信息
+  //   var $msg = $("#input_content").html();
+  //   if ($msg == "") return;
+  //   //把发送的信息先添加到自己的浏览器 DOM 中
+  //   if (to == "all") {
+  //     // $("#contents").append('<div>你(' + now() + ')对 所有人 说：<br/>' + $msg + '</div><br />');
+  //   } else {
+  //     $("#contents").append('<div style="color:#00f" >你(' + now() + ')对 ' + to + ' 说：<br/>' + $msg + '</div><br />');
+  //   }
+  //   //发送发话信息
+  //   socket.emit('say', {from: from, to: to, msg: $msg,room:roomNum});
+  //   //清空输入框并获得焦点
+  //   $("#input_content").html("").focus();
+  // });
 
   
 
@@ -323,7 +326,7 @@ function touchCard(hands){
       card.color = colorArray[hands[i].slice(0,1)];
       card.num = numArray[hands[i].slice(1)];
       card.x = 110 + 90 * i;
-      card.y = 460;
+      card.y = $(window).get(0).innerHeight-230-20;
       card.width = 150;
       card.height = 230;
 
@@ -362,6 +365,7 @@ function ellipsePath(ctx, centerX, centerY, width, height) {
       centerX - width/2, centerY - height/2, // C4
       centerX, centerY - height/2); // A1
   }
+
 
 
 
