@@ -62,25 +62,9 @@ $(document).ready(function() {
 
     $('#play_content a').html('');
 
-    for (i = 0 ; i < 7; ++i ) {
-      // 生成卡片
-      var card = {}
-      card.color = colorArray[playerHands[i].slice(0,1)];
-      card.num = numArray[playerHands[i].slice(1)];
-      card.x = 110 + 90 * i;
-      card.y = 460;
-      card.width = 150;
-      card.height = 230;
+    touchCard(playerHands);
 
-      cardArray.push(card);
-    }
-
-    for (i = 0 ; i < 7; ++i ) {
-      var card = cardArray[i];
-      cardMake(ctx, card.x, card.y, card.color , card.num);  // 横坐标，纵坐标，颜色，数字 
-    }
-
-
+    
 
     // 显示开局牌组
     for (var i = 0; i < playerHands.length; i++) {
@@ -281,7 +265,13 @@ $(document).ready(function() {
       $('#play_content a:last-child').html(data);
 
       // 将摸牌添加进手牌
-      playerHands.push(data);
+      // playerHands.push(data);
+      playerHands = playerHands.concat(data)
+      touchCard(playerHands);
+
+
+
+
   });
 
   //对话
@@ -322,6 +312,32 @@ Array.prototype.remove = function(val) {
       return false;
     }
 };
+
+
+// 生成卡片
+function touchCard(hands){
+    cardArray = [];
+    for (i = 0 ; i < hands.length; ++i ) {
+      // 生成卡片
+      var card = {}
+      card.color = colorArray[hands[i].slice(0,1)];
+      card.num = numArray[hands[i].slice(1)];
+      card.x = 110 + 90 * i;
+      card.y = 460;
+      card.width = 150;
+      card.height = 230;
+
+
+      cardArray.push(card);
+    }
+
+
+    for (i = 0 ; i < cardArray.length; ++i ) {
+      var card = cardArray[i];
+      cardMake(ctx, card.x, card.y, card.color , card.num);  // 横坐标，纵坐标，颜色，数字 
+    }
+    
+}
 
 function cornerRectPath(ctx, x, y, width, height, corner) {
     ctx.beginPath();
@@ -511,6 +527,7 @@ function cardMake(ctx, x, y, color, num) {
       cardMake(ctx, baseX, baseY, card.color , card.num);  // 横坐标，纵坐标，颜色，数字 
     }     
       cardArray.remove(cardArray[index])
+      playerHands.remove(playerHands[index])
   } 
 
   
