@@ -9,6 +9,13 @@ $(document).ready(function() {
 
   var socket = io.connect();
 
+  var colorArray = {r:'#d82520', y:'#fff300', b:'#0391dd', g:'#00923d'};
+  var numArray = new Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9','+2','+4');
+  var sence = document.getElementById("sence");
+  var ctx = sence.getContext("2d");
+  
+  var cardArray = [];
+
   // 房间
 
   //从 cookie 中读取用户名，存于变量 from
@@ -17,6 +24,8 @@ $(document).ready(function() {
   var to = 'all';
   // 玩家手牌
   var playerHands;
+
+
 
   //发送用户进入房间提示
   var roomNum = $.cookie('room');
@@ -50,7 +59,28 @@ $(document).ready(function() {
   socket.on('initCard',function(data){
     $("#contents").append('<div>给' + data.user + '发牌：'+data.playerHands+'</div><br/>');
     playerHands = data.playerHands;
+
     $('#play_content a').html('');
+
+    for (i = 0 ; i < 7; ++i ) {
+      // 生成卡片
+      var card = {}
+      card.color = colorArray[playerHands[i].slice(0,1)];
+      card.num = numArray[playerHands[i].slice(1)];
+      card.x = 110 + 90 * i;
+      card.y = 460;
+      card.width = 150;
+      card.height = 230;
+
+      cardArray.push(card);
+    }
+
+    for (i = 0 ; i < 7; ++i ) {
+      var card = cardArray[i];
+      cardMake(ctx, card.x, card.y, card.color , card.num);  // 横坐标，纵坐标，颜色，数字 
+    }
+
+
 
     // 显示开局牌组
     for (var i = 0; i < playerHands.length; i++) {
@@ -61,6 +91,45 @@ $(document).ready(function() {
       $('#play_content a').eq(i).html(playerHands[i]);
     };
   })
+
+
+
+  var XX, YY;
+
+  sence.addEventListener('touchstart', function(event) {
+    ctx.clearRect(0, 0, 150, 230);
+  })
+
+  sence.addEventListener('touchmove', function(event) {
+    if(event.targetTouches.length == 1) {
+        var touch = event.targetTouches[0];
+        for (i = cardArray.length-1; i >= 0; --i) {
+            var card = cardArray[i];                                
+            if (hitTest(touch.pageX, touch.pageY, card)) {
+                ctx.clearRect(0, 0, 1000, 750);
+                reDrawCard(i);
+                break;
+            }
+        }
+        XX = touch.pageX;
+        YY = touch.pageY;
+    }
+  })
+
+  sence.addEventListener("touchend", function(event) {
+    for (i = cardArray.length-1; i >= 0; --i) {
+        var card = cardArray[i];  
+        console.log('end'+XX+' '+YY)
+        console.log('end'+card.x+' '+card.x+card.width+' '+card.y+' '+card.y+card.height)
+
+        if (hitTest(XX, YY, card)) {
+            console.log(cardArray[i].num)
+            ctx.clearRect(0, 0, 1000, 750);            
+            showAHand(i);
+            break;
+        }
+    }
+  }, false);
 
   // 对话
   socket.on('say', function (data) {
@@ -231,7 +300,10 @@ $(document).ready(function() {
     //清空输入框并获得焦点
     $("#input_content").html("").focus();
   });
-});
+
+  
+
+
 
 // 数组操作
 Array.prototype.indexOf = function(val) {
@@ -250,6 +322,199 @@ Array.prototype.remove = function(val) {
       return false;
     }
 };
+
+function cornerRectPath(ctx, x, y, width, height, corner) {
+    ctx.beginPath();
+    ctx.moveTo(x + corner, y);
+    ctx.arcTo(x + width, y, x + width, y + corner, corner);
+    ctx.arcTo(x + width, y + height, x + width - corner, y + height, corner);
+    ctx.arcTo(x, y + height, x, y + height - corner, corner);
+    ctx.arcTo(x, y, x + corner, y, corner);
+  }
+
+function ellipsePath(ctx, centerX, centerY, width, height) {
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY - height/2); // A1
+
+    ctx.bezierCurveTo(
+      centerX + width/2, centerY - height/2, // C1
+      centerX + width/2, centerY + height/2, // C2
+      centerX, centerY + height/2); // A2
+
+    ctx.bezierCurveTo(
+      centerX - width/2, centerY + height/2, // C3
+      centerX - width/2, centerY - height/2, // C4
+      centerX, centerY - height/2); // A1
+  }
+
+
+
+function cardMake(ctx, x, y, color, num) {
+    var width = 150
+    var height = width / 15 * 23
+    var corner = width / 15
+    var inner = corner
+    var innerWidth = width - inner * 2;
+    var innerHeight = height - inner * 2;
+
+    var wideInnerWidth=width/3;
+    var wideInnerHeight=wideInnerWidth/15*23;
+  
+    // 画外框
+    cornerRectPath(ctx, x, y, width, height, corner)
+    ctx.lineWidth = 1
+    ctx.strokeStyle = 'black';
+    ctx.stroke();
+
+    ctx.fillStyle = 'white';
+    ctx.fill();
+
+    // 填充内框
+    cornerRectPath(ctx, x + inner, y + inner, innerWidth, innerHeight, corner / 2)
+    if (num=='+4'||num=='wild') {
+      ctx.fillStyle = '#000';
+    }else{
+      ctx.fillStyle = color;
+    }
+    ctx.fill();
+
+    // 椭圆
+    ctx.save();
+    ctx.translate(x + width / 2, y + height / 2);
+    ctx.rotate(Math.PI / 6)
+    ellipsePath(ctx, 0, 0, innerWidth * 1.2, innerHeight)
+    ctx.fillStyle = 'white';
+    ctx.fill();
+    // ctx.restore()
+
+    if (num=='+4') {
+
+      ctx.shadowColor = 'black';
+      ctx.shadowOffsetX = 3;
+      ctx.shadowOffsetY = 3;
+      ctx.shadowBlur = 1;
+
+      cornerRectPath(ctx,0, -wideInnerHeight/2, wideInnerWidth, wideInnerHeight, corner / 2)
+      ctx.fillStyle = '#00923D';
+      ctx.fill();
+
+      cornerRectPath(ctx,-wideInnerWidth/3,-wideInnerHeight/8, wideInnerWidth, wideInnerHeight, corner / 2)
+      ctx.fillStyle = '#FFF300';
+      ctx.fill();
+
+      cornerRectPath(ctx,-wideInnerWidth/3*2, -wideInnerHeight/8*7, wideInnerWidth, wideInnerHeight, corner / 2)
+      ctx.fillStyle = '#0391DD';
+      ctx.fill();
+
+      cornerRectPath(ctx,-wideInnerWidth, -wideInnerHeight/2, wideInnerWidth, wideInnerHeight, corner / 2)
+      ctx.fillStyle = '#D82520';
+      ctx.fill();
+
+      ctx.restore()
+
+    }else if (num=='+2') {
+
+      ctx.shadowColor = 'black';
+      ctx.shadowOffsetX = 3;
+      ctx.shadowOffsetY = 3;
+      ctx.shadowBlur = 1;
+
+      cornerRectPath(ctx,-wideInnerWidth/3, -wideInnerHeight/8*6, wideInnerWidth, wideInnerHeight, corner / 2)
+      ctx.fillStyle = color;
+      ctx.fill();
+
+      cornerRectPath(ctx,-wideInnerWidth/3*2, -wideInnerHeight/8*2, wideInnerWidth, wideInnerHeight, corner / 2)
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.restore()
+    }else{
+
+      ctx.restore()
+
+      // 中间文字
+      ctx.save();
+      ctx.translate(x + width / 2, y + height / 2);
+      ctx.font = 'italic 70px impact';        // 字体
+      ctx.textAlign = 'center';       // 水平居中
+      ctx.textBaseline = 'middle';    // 垂直居中
+      ctx.shadowColor = 'black';
+      ctx.shadowOffsetX = 3;
+      ctx.shadowOffsetY = 3;
+      ctx.shadowBlur = 1;
+      ctx.fillStyle = color;
+      ctx.fillText(num, -10, -5);
+      ctx.restore()
+
+    }
+
+
+    // 两边文字
+    ctx.save();
+    ctx.translate(x + inner + 10, y + inner + 10);
+    ctx.font = 'italic 20px impact';        // 字体
+    ctx.textAlign = 'center';       // 水平居中
+    ctx.textBaseline = 'middle';    // 垂直居中
+    ctx.fillStyle = 'white';
+    ctx.fillText(num, -3, 2);
+    ctx.restore()
+
+    ctx.save();
+    ctx.translate(x + width - inner - 10, y + height - inner - 10);
+    ctx.rotate(Math.PI)
+    ctx.font = 'italic 20px impact';        // 字体
+    ctx.textAlign = 'center';       // 水平居中
+    ctx.textBaseline = 'middle';    // 垂直居中
+    ctx.fillStyle = 'white';
+    ctx.fillText(num, -3, 2);
+    ctx.restore()
+  }
+
+
+  // 测试是否点中卡片          
+  function hitTest(x, y, card) {
+      if (card.x < x && x < card.x + card.width && card.y < y && y < card.y + card.height) {
+          return true;
+      }
+      return false;                          
+  }
+
+  
+  // 重绘卡片
+  function reDrawCard(index) {
+    for (i = 0 ; i < cardArray.length; ++i) {
+      var card = cardArray[i];
+      baseY = card.y;
+      if (i == index) {
+        baseY -= 30;
+      }
+      cardArray[i].x = 110 + 90 * i;
+
+      cardMake(ctx, 110 + 90 * i, baseY, card.color , card.num);  // 横坐标，纵坐标，颜色，数字 
+    }     
+  }   
+
+  // 出牌
+  function showAHand(index) {
+    for (i = 0 ; i < cardArray.length; ++i) {
+      var card = cardArray[i];
+      baseX = card.x;
+      baseY = card.y;
+      if (i == index) {
+        baseX = 0;
+        baseY = 0;
+      }
+
+      if (i>index) {
+        baseX = 110 + 90 * i - 90;
+      };
+
+      cardMake(ctx, baseX, baseY, card.color , card.num);  // 横坐标，纵坐标，颜色，数字 
+    }     
+      cardArray.remove(cardArray[index])
+  } 
+
+  
+});
 
 
 

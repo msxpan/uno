@@ -80,10 +80,11 @@ app.post('/hall', function (req, res) {
 
 // uno原始卡牌
 var unoOriginal=[
-    'r0','r1','r2','r3','r4','r5','r6','r7','r8','r9','r1','r2','r3','r4','r5','r6','r7','r8','r9',
-    'y0','y1','y2','y3','y4','y5','y6','y7','y8','y9','y1','y2','y3','y4','y5','y6','y7','y8','y9',
-    'b0','b1','b2','b3','b4','b5','b6','b7','b8','b9','b1','b2','b3','b4','b5','b6','b7','b8','b9',
-    'g0','g1','g2','g3','g4','g5','g6','g7','g8','g9','g1','g2','g3','g4','g5','g6','g7','g8','g9',
+    'r0','r1','r2','r3','r4','r5','r6','r7','r8','r9','r1','r2','r3','r4','r5','r6','r7','r8','r9','r10','r10','r11',
+    'y0','y1','y2','y3','y4','y5','y6','y7','y8','y9','y1','y2','y3','y4','y5','y6','y7','y8','y9','y10','y10','y11',
+    'b0','b1','b2','b3','b4','b5','b6','b7','b8','b9','b1','b2','b3','b4','b5','b6','b7','b8','b9','b10','b10','b11',
+    'g0','g1','g2','g3','g4','g5','g6','g7','g8','g9','g1','g2','g3','g4','g5','g6','g7','g8','g9','g10','g10','g11',
+
 ];
 
 var server = http.createServer(app);
@@ -133,7 +134,7 @@ io.sockets.on('connection', function (socket) {
       };
 
       if (roomInfo[data.room].length==2) { 
-          var unoRefresh=getArrayItems(unoOriginal,76);
+          var unoRefresh=getArrayItems(unoOriginal,88);
 
           // roomUno[data.room].push(getArrayItems(unoOriginal,76));
           //查询房间内所有用户 给每个用户发初始牌          
