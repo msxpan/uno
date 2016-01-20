@@ -123,7 +123,7 @@ io.sockets.on('connection', function (socket) {
       console.log('在线总人数：'+io.sockets.clients().length);
       console.log(data.user+' 进入房间：'+data.room+'房间总人数：'+roomInfo[data.room].length);
 
-      if (roomInfo[data.room].length<=4) {
+      if (roomInfo[data.room].length<2) {
         socket.join(data.room);
       }else{
         socket.emit('isFull','房间已满')
