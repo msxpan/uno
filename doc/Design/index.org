@@ -1,0 +1,121 @@
+* 用例
+#+begin_src plantuml :file usecase.png
+:玩家: as player
+(玩uno) as playUno
+
+player -> playUno
+#+end_src
+
+* 类图
+
+** 客户端
+#+begin_src plantuml :file client_class.png
+class CardGroup {
+    cards : Card[]
+    rect : {x, y, width, height}
+    __
+    + void appendCard(Card)
+    + void sendOut(Card)
+    + void reDraw(TouchEvent)
+    + bool hitText(TouchEvent)
+    + Card selectedCard(TouchEvent)
+}
+
+class Card {
+    name : String
+    frame : {x, y, width, height}
+    __
+    + bool hitTest(TouchEvent)
+    + bool match(LastCard)
+}
+
+class LastCard {
+    name : String
+    color : Color
+}
+
+class OtherPlayer {
+    name : String
+    frame :  {x, y, width, height}
+    CardNum : int
+    __
+    + void reDraw()
+}
+
+class Menu {
+    + Card requestCard()
+    + void uno()
+    + void question+4()
+    + void noQuestion+4()
+    + void reDraw() 
+    + void activeAction()
+}
+
+class Sence {
+    player : CardGroup
+    others : OtherPlayer[3] 
+    frame : {x, y, width, height}
+    menu : Menu
+    __
+    + void onActiveForNewTurn()
+    + void onActiveForQuestion+4()
+}
+
+CardGroup -> Card
+Card <|-- LastCard
+Sence --> CardGroup
+Sence --> OtherPlayer
+Sence -> Menu
+
+#+end_src
+
+** 服务器端
+#+begin_src plantuml :file server_class.png
+class Card {
+    name : String
+}
+
+class LastCard {
+    name : String
+    color : Color
+}
+
+class Player {
+    name : String
+    client : socket
+    __
+    + void onSendCard(Card)
+    + void onUno()
+    + void onRequestCard()
+    + void onQuestion+4()
+    + void onNoQuestion+4()
+}
+
+
+class RemindCards {
+    cards: Card[]
+    __
+    + bool hasEnoughCards(Number)
+    + void sendCard(Player, Card[])
+}
+
+class Situation {
+    remindCards : RemindCards
+    players : Player[4]
+    directory: {顺时针, 逆时针}
+    activePlayer: Index
+    lastCard : LastCard
+    __
+    + bool isActivePlayer()
+    + void activePlayerForNetTurn()
+    + void activePlayerFor+4()
+    + void fetchCard(Card)
+    + void BoradCastSendOut(Player, Card)
+    + void BoradCastsendUno()
+
+}
+
+Card <|-- LastCard
+Situation --> RemindCards
+Situation --> Player
+#+end_src
