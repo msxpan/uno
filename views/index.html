@@ -19,34 +19,36 @@
       <canvas id="sence" style="border:1px solid #c3c3c3;"></canvas>
         <div id="contents"></div>
       </div>
-     <!--  <div id="content_saying">
-        <div id="toolbar"></div>
-        <div id="input_content" contenteditable="true"></div>
-        <div id="sayingto">你好 <span id="from"></span> ，你正在对 <span id="to"></span> 说</div>
-        <div id="say">发送</div>
-      </div> -->
-      <div id="content_playing">
-        <!-- <div id="play_toolbar"></div> -->
-        <div id="play_content">
-          <a href="###"></a>
-          
-        </div>
-        <!-- <div id="playingto">点击选择出牌</div> -->
-        <div id="play">摸牌</div>
-      </div>
-    </div>
-    <div id="users_online">
-      <a href="javascript:window.location.href='hall'" id="goback">退出房间</a>
-      <!-- <div id="usersbar"> -->
-
-        <!-- <div id="user_label">在线用户</div> -->
-        <!-- <div id="users_list"> -->
-          <!-- <ul id="list"></ul> -->
-          <!-- <ul id="listInRoom"></ul> -->
-
-        <!-- </div> -->
-      <!-- </div> -->
+      <ul id="navs" data-open="收起" data-close="展开">
+        <li><a href="javascript:;" id="play">摸牌</a></li>
+        <li><a href="javascript:;">质疑</a></li>
+        <li><a href="javascript:;">uno</a></li>
+        <li><a href="javascript:window.location.href='hall'" id="goback">退出</a></li>
+      </ul>
     </div>
   </div>
 </body>
+<script type="text/javascript">
+(function(){
+  var ul=$("#navs"),li=$("#navs li"),i=li.length,n=i-1,r=120;
+  ul.click(function(){
+    $(this).toggleClass('active');
+    if($(this).hasClass('active')){
+      for(var a=0;a<i;a++){
+        li.eq(a).css({
+          'transition-delay':""+(50*a)+"ms",
+          '-webkit-transition-delay':""+(50*a)+"ms",
+          '-o-transition-delay':""+(50*a)+"ms",
+          'transform':"translate("+(-r*Math.cos(90/n*a*(Math.PI/180)))+"px,"+(-r*Math.sin(90/n*a*(Math.PI/180)))+"px",
+          '-webkit-transform':"translate("+(-r*Math.cos(90/n*a*(Math.PI/180)))+"px,"+(-r*Math.sin(90/n*a*(Math.PI/180)))+"px",
+          '-o-transform':"translate("+(-r*Math.cos(90/n*a*(Math.PI/180)))+"px,"+(-r*Math.sin(90/n*a*(Math.PI/180)))+"px",
+          '-ms-transform':"translate("+(-r*Math.cos(90/n*a*(Math.PI/180)))+"px,"+(-r*Math.sin(90/n*a*(Math.PI/180)))+"px",
+        });
+      }
+    }else{
+      li.removeAttr('style');
+    }
+  });
+})($);
+</script>
 </html>

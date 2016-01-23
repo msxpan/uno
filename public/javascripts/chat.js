@@ -67,16 +67,9 @@ $(document).ready(function() {
 
     touchCard(playerHands);
 
-    
 
-    // 显示开局牌组
-    for (var i = 0; i < playerHands.length; i++) {
-      if ($('#play_content a').length<7) {
-        $('#play_content').append($('#play_content a').eq(0).clone(true));
-      };
+    console.log(playerHands)
 
-      $('#play_content a').eq(i).html(playerHands[i]);
-    };
   })
 
 
