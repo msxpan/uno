@@ -180,7 +180,7 @@
   color:#39F;
   font-weight:bold
 }
-#play,
+
 #say{
   position: absolute;
   /*top: 35px;*/
@@ -200,17 +200,66 @@
   background: rgba(0,0,0,0.5);
 }
 
+/*菜单*/
 
 
-
-#goback{
-    display: block;
+#navs {
+    position: fixed;
+    right: 4px;
+    bottom: 4px;
+    width: 55px;
+    height: 55px;
+    line-height: 40px;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
     text-align: center;
-    height: 50px;
-    line-height: 70px;
-    background: #999999;
-    border-radius: 5px;
     color: #fff;
-    height: 70px;
-    font-size: 20px;
+    cursor: pointer;
+    line-height: 55px;
 }
+
+#navs>li,
+#navs:after {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    background: #605F60;
+}
+
+#navs>li {
+    transition: all .6s;
+    -webkit-transition: all .6s;
+    -moz-transition: .6s;
+}
+
+#navs:after {
+    content: attr(data-close);
+    z-index: 1;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+}
+
+#navs.active:after {
+    content: attr(data-open);
+}
+
+#navs a {
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    text-decoration: none;
+    color: #fff;
+    font-size: 0.8em;
+}
+
+ul{
+  outline: none;
+}
+
