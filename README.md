@@ -1,2 +1,2 @@
 # uno
-playing games with friends
+Playing games with friends
