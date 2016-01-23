@@ -10,7 +10,7 @@ $(document).ready(function() {
   var socket = io.connect();
 
   var colorArray = {r:'#d82520', y:'#fff300', b:'#0391dd', g:'#00923d'};
-  var numArray = new Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9','+2','+4');
+  var numArray = new Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9','+2','+4');2
   var sence = document.getElementById("sence");
   var ctx = sence.getContext("2d");
   
@@ -65,7 +65,7 @@ $(document).ready(function() {
 
     $('#play_content a').html('');
 
-    touchCard(playerHands);
+    //touchCard(playerHands);	
 
     
 
@@ -258,10 +258,11 @@ $(document).ready(function() {
 
 
   // 摸牌
-  $("#play").click(function() {
+  //$("#play").click(function() {
     //发送摸牌请求
-    socket.emit('touchCard', {from: from, room:roomNum});
-  });
+      //socket.emit('touchCard', {from: from, room:roomNum});
+   //   senceTouchCard();
+ // });
 
   socket.on('dealCard', function(data){
       $('#play_content').append($('#play_content a').eq(0).clone(true));
