@@ -218,7 +218,7 @@ $(document).ready(function() {
 	    if (this.cards.length == 0) {
 		// 初始位置
 		frame.x = 10;
-		frame.y = 40;
+		frame.y = 41;
 	    } else {
 		// 以卡组中最后一张的位置为基准，进行相对调整
 		var lastCard = this.cards[this.cards.length - 1];
@@ -247,14 +247,14 @@ $(document).ready(function() {
 	    this.context.clearRect(this.frame.x, this.frame.y, this.frame.width, this.frame.height);
 	    
 	    // CardGroup的区域线，辅助用，最后删掉
-	    this.context.beginPath();
-	    this.context.moveTo(this.frame.x, this.frame.y + this.frame.height);
-	    this.context.lineTo(this.frame.x, this.frame.y);
-	    this.context.lineTo(this.frame.x + this.frame.width, this.frame.y);
-	    this.context.lineTo(this.frame.x + this.frame.width, this.frame.y + this.frame.height);
-	    this.context.lineWidth = 1;
-	    this.context.strokeStyle = 'black';
-	    this.context.stroke();
+	    // this.context.beginPath();
+	    // this.context.moveTo(this.frame.x, this.frame.y + this.frame.height);
+	    // this.context.lineTo(this.frame.x, this.frame.y);
+	    // this.context.lineTo(this.frame.x + this.frame.width, this.frame.y);
+	    // this.context.lineTo(this.frame.x + this.frame.width, this.frame.y + this.frame.height);
+	    // this.context.lineWidth = 1;
+	    // this.context.strokeStyle = 'black';
+	    // this.context.stroke();
 
 	    // 卡组重绘
 	    this.context.save();
@@ -370,15 +370,15 @@ $(document).ready(function() {
 	    this.context.clearRect(this.frame.x, this.frame.y, this.frame.width, this.frame.height);
 	    
 	    // CardStack的区域线，辅助用，最后删掉
-	    this.context.beginPath();
-	    this.context.moveTo(this.frame.x, this.frame.y + this.frame.height);
-	    this.context.lineTo(this.frame.x, this.frame.y);
-	    this.context.lineTo(this.frame.x + this.frame.width, this.frame.y);
-	    this.context.lineTo(this.frame.x + this.frame.width, this.frame.y + this.frame.height);
-	    this.context.lineTo(this.frame.x, this.frame.y + this.frame.height);
-	    this.context.lineWidth = 1;
-	    this.context.strokeStyle = 'black';
-	    this.context.stroke();
+	    // this.context.beginPath();
+	    // this.context.moveTo(this.frame.x, this.frame.y + this.frame.height);
+	    // this.context.lineTo(this.frame.x, this.frame.y);
+	    // this.context.lineTo(this.frame.x + this.frame.width, this.frame.y);
+	    // this.context.lineTo(this.frame.x + this.frame.width, this.frame.y + this.frame.height);
+	    // this.context.lineTo(this.frame.x, this.frame.y + this.frame.height);
+	    // this.context.lineWidth = 1;
+	    // this.context.strokeStyle = 'black';
+	    // this.context.stroke();
 
 	    // 卡组重绘
 	    // this.context.save();
@@ -484,6 +484,12 @@ $(document).ready(function() {
 	sence.cardGroup.appendCard(uno[index]);
 	sence.cardGroup.reDraw();
     }
+
+    touchCard();
+    touchCard();
+    touchCard();
+    touchCard();
+    touchCard();
     
 
     $("#play").click(function() {
