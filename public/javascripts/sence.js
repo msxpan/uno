@@ -93,11 +93,13 @@ $(document).ready(function() {
 
 
     // 创建卡片card对象
-    function createCard(name) {
+    function createCard(ctx, name) {
 	var card = {};
 	card.name = name;
 	card.selected = false;     // 选中标识，选中的牌上移40px，在牌的reDraw函数中处理
-	                           // card.frame 在加入卡组时，由在卡组中的位置给出frame
+	card.context = ctx;
+
+	
 
 	// 是否点击此卡
 	card.hitTest = function(point) {     
@@ -108,8 +110,8 @@ $(document).ready(function() {
 	}
 
 	// 重绘卡片
-	card.reDraw = function(ctx) {
-	    drawCard(ctx, this);
+	card.reDraw = function() {
+	    drawCard(this.context, this);
 	}
 
 	return card;
@@ -117,37 +119,42 @@ $(document).ready(function() {
 
 
     // 创建卡组cardGroup对象
-    function createCardGroup(width, height) {
+    function createCardGroup(ctx, size) {
 	var cardGroup = {};
+
+	// 绘图上下文
+	cardGroup.context = ctx;
 	
 	// CardGroup 定界
 	var frame = {};
-	frame.x = 160;
-	frame.width = width - frame.x * 2;
-	frame.height = 220;
-	frame.y = height - frame.height;
-	cardGroup.rect = frame;
+	frame.width = 700;
+	frame.height = 240;	
+	frame.x = (size.width - frame.width) / 2;
+	frame.y = size.height - frame.height;
+	
+	cardGroup.frame = frame;
 
 	// CardGroup 卡组
-	var cardArray = [];
-	cardGroup.cards = cardArray;
+	cardGroup.cards = [];
 
 	// 摸一张牌
-	cardGroup.appendCard = function(card) {
+	cardGroup.appendCard = function(name) {
+	    var card = createCard(ctx, name);
+	    
 	    var frame = {};
 
 	    frame.width = 100;
 	    frame.height = 150;
 
-	    if (cardArray.length == 0) {
+	    if (this.cards.length == 0) {
 		// 初始位置
 		frame.x = 10;
-		frame.y = 10;
+		frame.y = 40;
 	    } else {
 		// 以卡组中最后一张的位置为基准，进行相对调整
-		var lastCard = cardArray[cardArray.length - 1];
+		var lastCard = this.cards[this.cards.length - 1];
 		
-		if (lastCard.frame.x + 60 + frame.width > this.rect.width) {
+		if (lastCard.frame.x + 60 + lastCard.frame.width > this.frame.width) {
 		    // 超过右边界，拆行并回到左边界
 		    frame.x = 10;
 		    frame.y = lastCard.frame.y + 60;
@@ -162,38 +169,38 @@ $(document).ready(function() {
 	    card.frame = frame;
 
 	    // 加入卡组Array
-	    cardArray.push(card);
+	    this.cards.push(card);
 	}
 
 	// CardGroup 重绘
-	cardGroup.reDraw = function(ctx) {
-	    // 清除cardGroup的绘制区，上下左右各加40px，把选中弹起的卡片也擦掉
-	    ctx.clearRect(this.rect.x - 40, this.rect.y - 40, this.rect.width + 80, this.rect.height + 80);
-
+	cardGroup.reDraw = function() {
+	    // 清除cardGroup的绘制区
+	    this.context.clearRect(this.frame.x, this.frame.y, this.frame.width, this.frame.height);
+	    
 	    // CardGroup的区域线，辅助用，最后删掉
-	    ctx.beginPath();
-	    ctx.moveTo(this.rect.x, this.rect.y + this.rect.height);
-	    ctx.lineTo(this.rect.x, this.rect.y);
-	    ctx.lineTo(this.rect.x + this.rect.width, this.rect.y);
-	    ctx.lineTo(this.rect.x + this.rect.width, this.rect.y + this.rect.height);
-	    ctx.lineWidth = 1;
-	    ctx.strokeStyle = 'black';
-	    ctx.stroke();
+	    this.context.beginPath();
+	    this.context.moveTo(this.frame.x, this.frame.y + this.frame.height);
+	    this.context.lineTo(this.frame.x, this.frame.y);
+	    this.context.lineTo(this.frame.x + this.frame.width, this.frame.y);
+	    this.context.lineTo(this.frame.x + this.frame.width, this.frame.y + this.frame.height);
+	    this.context.lineWidth = 1;
+	    this.context.strokeStyle = 'black';
+	    this.context.stroke();
 
 	    // 卡组重绘
-	    ctx.save();
-	    ctx.translate(this.rect.x, this.rect.y);       // 坐标系转换到CardGroup区
+	    this.context.save();
+	    this.context.translate(this.frame.x, this.frame.y);       // 坐标系转换到CardGroup区
 	    
-	    for (i = 0; i < cardArray.length; ++i) {       // 调用每张Card的重绘
-		cardArray[i].reDraw(ctx);
+	    for (i = 0; i < this.cards.length; ++i) {       // 调用每张Card的重绘
+		this.cards[i].reDraw(this.context);
 	    }
 
-	    ctx.restore();
+	    this.context.restore();
 	}
 
 	// 点击检测
 	cardGroup.hitTest = function (point) {
-	    if (this.rect.x < point.x && point.x < this.rect.x + this.rect.width && this.rect.y < point.y && point.y < this.rect.y + this.rect.height) {
+	    if (this.frame.x < point.x && point.x < this.frame.x + this.frame.width && this.frame.y < point.y && point.y < this.frame.y + this.frame.height) {
 		return true;
 	    }
 	    return false;						     
@@ -202,21 +209,20 @@ $(document).ready(function() {
 	// 收到点击事件
 	cardGroup.touchdown = function (point) {
 	    if (this.hitTest(point)) {
-
 		// 清理卡组的选中事件，所有牌落回基线
-		for (i = 0; i < cardArray.length; ++i) {
-		    var card = cardArray[i];
+		for (i = 0; i < this.cards.length; ++i) {
+		    var card = this.cards[i];
 		    card.selected = false;
 		}
 
 		// 根据卡组中每张牌的坐标，判断哪张卡版被选中
-		for (i = cardArray.length - 1; i >= 0; --i) {
-		    var card = cardArray[i];
+		for (i = this.cards.length - 1; i >= 0; --i) {
+		    var card = this.cards[i];
 		    var cardPoint = {};
 
 		    // 将全局坐标切换到cardGroup坐标，用作卡组判断
-		    cardPoint.x = point.x - this.rect.x;
-		    cardPoint.y = point.y - this.rect.y;
+		    cardPoint.x = point.x - this.frame.x;
+		    cardPoint.y = point.y - this.frame.y;
 
 		    if (card.hitTest(cardPoint)) { // 调用每张card的hitTest
 			card.selected = true;  // 点中的卡设为selected
@@ -226,73 +232,174 @@ $(document).ready(function() {
 	    }
 	}
 
-	cardGroup.touchup = function () {
+	// 抬手
+	cardGroup.touchup = function (callback) {
 	    // TODO 出牌
-	    for (i = 0; i < cardArray.length; ++i) {
-		var card = cardArray[i];
+	    for (i = 0; i < this.cards.length; ++i) {
+		var card = this.cards[i];
 		if (card.selected) {
-		    for (j = cardArray.length - 1; j > i; --j) {
-			var preCard = cardArray[j - 1];
-			var curCard = cardArray[j];
+		    for (j = this.cards.length - 1; j > i; --j) {
+			var preCard = this.cards[j - 1];
+			var curCard = this.cards[j];
 
 			curCard.frame = preCard.frame;
 		    }
-		    cardArray.splice(i, 1);
+		    this.cards.splice(i, 1);
+		    callback(card);
+		    break;
 		}
 	    }
 	}
 
-
+	
 	
 	return cardGroup;
     }
 
-    // 原始场景尺寸
-    var regularWidth = 1024;
-    var regularHeight = 576;
+    // 创建出牌堆
+    function createCardStack(ctx, size) {
+	var cardStack = {};
 
+	var frame = {};
+
+	frame.width = 660;
+	frame.height = 160;
+	frame.x = (size.width - frame.width) / 2;
+	frame.y = 160;
+
+	cardStack.frame = frame;
+	cardStack.context = ctx;
+	cardStack.cards = [];
+	cardStack.scale = 0.6;
+
+	// CardStack 接收到一张牌
+	cardStack.appendCard = function(card) {
+	    // 设置投射系数
+	    card.selected = false;
+	    
+	    var randomWidth = this.frame.width / this.scale - card.frame.width;
+	    var randomHeight = this.frame.height / this.scale - card.frame.height;
+
+	    var frame = jQuery.extend(card.frame);
+	    frame.x = Math.floor(Math.random() * randomWidth);
+	    frame.y = Math.floor(Math.random() * randomHeight);
+
+	    card.frame = frame;
+
+	    // 重绘
+	    this.context.save();
+	    this.context.translate(this.frame.x, this.frame.y);
+	    this.context.scale(this.scale, this.scale);
+	    card.reDraw();
+
+	    this.context.restore();	    
+	}
+	
+	// CardStack 重绘
+	cardStack.reDraw = function() {
+	    // 清除cardStack的绘制区
+	    this.context.clearRect(this.frame.x, this.frame.y, this.frame.width, this.frame.height);
+	    
+	    // CardStack的区域线，辅助用，最后删掉
+	    this.context.beginPath();
+	    this.context.moveTo(this.frame.x, this.frame.y + this.frame.height);
+	    this.context.lineTo(this.frame.x, this.frame.y);
+	    this.context.lineTo(this.frame.x + this.frame.width, this.frame.y);
+	    this.context.lineTo(this.frame.x + this.frame.width, this.frame.y + this.frame.height);
+	    this.context.lineTo(this.frame.x, this.frame.y + this.frame.height);
+	    this.context.lineWidth = 1;
+	    this.context.strokeStyle = 'black';
+	    this.context.stroke();
+
+	    // 卡组重绘
+	    // this.context.save();
+	    // this.context.translate(this.frame.x, this.frame.y);       // 坐标系转换到CardGroup区
+	    
+	    // for (i = 0; i < cardArray.length; ++i) {       // 调用每张Card的重绘
+	    // 	cardArray[i].reDraw(this.context);
+	    // }
+
+	    // this.context.restore();
+	}
+
+	return cardStack;
+    }
+
+    // 创建场景
+    function createSence(ctx, size) {
+	var sence = {};
+	
+	// 原始场景尺寸
+	sence.originalSize = {width : 1024, height : 576};
+
+	// 真实投影场景尺寸
+	sence.size = size;
+
+	// 绘图上下文
+	sence.context = ctx;
+	
+
+	// 全局坐标系变换，从原始场景向真实场景投射，变换后所有场景尺寸变为以1024*576为基准
+	ctx.scale(size.width/sence.originalSize.width, size.height/sence.originalSize.height);
+
+	// 创建用户CardGroup
+	sence.cardGroup = createCardGroup(sence.context, sence.originalSize);
+
+	// 创建出牌堆
+	sence.cardStack = createCardStack(sence.context, sence.originalSize);
+	
+	// 重绘
+	sence.reDraw = function() {
+	    sence.cardGroup.reDraw();
+	    sence.cardStack.reDraw();
+	}
+
+
+	// 手势事件
+	function sencePoint(point) {
+	    return {x : point.x / sence.size.width * sence.originalSize.width, y : point.y / sence.size.height * sence.originalSize.height};
+	}
+	
+	sence.touchstart = function(point) {
+	    this.cardGroup.touchdown(sencePoint(point));
+	    this.cardGroup.reDraw();
+	}
+
+	sence.touchmove = function(point) {
+	    this.cardGroup.touchdown(sencePoint(point));
+	    this.cardGroup.reDraw();
+	}
+	
+	sence.touchend = function() {
+	    this.cardGroup.touchup(function(card){
+		sence.cardStack.appendCard(card);
+	    });
+	    this.cardGroup.reDraw();
+	}
+	
+	return sence;
+    }
     // Canvas
-    var sence = document.getElementById("sence");
-    var ctx = sence.getContext("2d");
-
-    // 真实投影场景尺寸
-    var realWidth = $('#sence').width();
-    var realHeight = $('#sence').height();
-
-    // 创建用户CardGroup
-    var cardGroup = createCardGroup(regularWidth, regularHeight);
-
-    // 全局坐标系变换，从原始场景向真实场景投射，变换后所有场景尺寸变为以1024*576为基准
-    ctx.scale(realWidth/regularWidth, realHeight/regularHeight);
+    var canvas = document.getElementById("sence");
+    var ctx = canvas.getContext("2d");
+    var sence = createSence(ctx, {width : $('#sence').width(), height : $('#sence').height()});
+    sence.reDraw();
 
     // 点击与滑动事件连到一起，处理卡片的选中
-    sence.addEventListener('touchstart', function(event){
-	// 真实点击坐标向原始场景坐标变换
+    canvas.addEventListener('touchstart', function(event){
         var touch = event.targetTouches[0];
-	var point = {};
-	point.x = touch.pageX / realWidth * regularWidth;
-	point.y = touch.pageY / realHeight * regularHeight;
-
-	// 检测cardGroup的按下事件，并重绘
-	cardGroup.touchdown(point);
-	cardGroup.reDraw(ctx);
+	sence.touchstart({x : touch.pageX, y : touch.pageY});
     });
     
-    sence.addEventListener('touchmove', function(event){
+    canvas.addEventListener('touchmove', function(event){
 	var touch = event.targetTouches[0];
-	var point = {};
-	point.x = touch.pageX / realWidth * regularWidth;
-	point.y = touch.pageY / realHeight * regularHeight;
-	cardGroup.touchdown(point);
-	cardGroup.reDraw(ctx);
+	sence.touchmove({x : touch.pageX, y : touch.pageY});
     });
 
     // 抬手事件，连到出牌逻辑上
-    sence.addEventListener('touchend', function(event){	
-	cardGroup.touchup();
-	cardGroup.reDraw(ctx);
+    canvas.addEventListener('touchend', function(){	
+	sence.touchend();
     });
-
 
     // 摸牌模拟，暂时连到“摸牌”button上
     function touchCard() {
@@ -305,12 +412,10 @@ $(document).ready(function() {
 	];
 
 	var index = Math.floor(Math.random() * 88);
-	cardGroup.appendCard(createCard(uno[index]));
-	cardGroup.reDraw(ctx);
+	sence.cardGroup.appendCard(uno[index]);
+	sence.cardGroup.reDraw();
     }
     
-    // 临时事件，摸一张牌
-    touchCard();
 
     $("#play").click(function() {
 	//发送摸牌请求
