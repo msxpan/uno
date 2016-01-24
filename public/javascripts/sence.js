@@ -29,6 +29,11 @@ $(document).ready(function() {
     // 绘卡
     function drawCard(ctx, card) {
 	var cardframe = jQuery.extend(card.frame);
+	var colorMap = {r:'#d82520', y:'#fff300', b:'#0391dd', g:'#00923d', w: 'black'};
+
+	// 解卡，卡的颜色，卡的数字
+	var color = colorMap[card.name.slice(0, 1)];
+	var type = card.name.slice(1);
 
 	// 如果卡片处于选中状态，弹起40px
 	if (card.selected) {
@@ -53,7 +58,7 @@ $(document).ready(function() {
 	frame.height = cardframe.height - inner * 2;
 	cornerRectPath(ctx, frame, 10);
 
-	ctx.fillStyle = 'red';
+	ctx.fillStyle = color;
 	ctx.fill();
 	
 	// 椭圆
@@ -65,8 +70,25 @@ $(document).ready(function() {
 	ctx.fill();
 	ctx.restore();
 
-	//跟据card.name解卡后，绘制后续内容
-		
+	// 两边文字
+	ctx.save();
+	ctx.translate(cardframe.x + inner + 10, cardframe.y + inner + 10);
+	ctx.font = 'italic 18px impact';        // 字体
+	ctx.textAlign = 'center';       // 水平居中
+	ctx.textBaseline = 'middle';    // 垂直居中
+	ctx.fillStyle = 'white';
+	ctx.fillText(type, -2, 2);
+	ctx.restore()
+	
+	ctx.save();
+	ctx.translate(cardframe.x + cardframe.width - inner - 10, cardframe.y + cardframe.height - inner - 10);
+	ctx.rotate(Math.PI)
+	ctx.font = 'italic 18px impact';        // 字体
+	ctx.textAlign = 'center';       // 水平居中
+	ctx.textBaseline = 'middle';    // 垂直居中
+	ctx.fillStyle = 'white';
+	ctx.fillText(type, -2, 2);
+	ctx.restore()
     }
 
 
@@ -204,21 +226,26 @@ $(document).ready(function() {
 	    }
 	}
 
-	cardGroup.touchup = function (point) {
+	cardGroup.touchup = function () {
 	    // TODO 出牌
+	    for (i = 0; i < cardArray.length; ++i) {
+		var card = cardArray[i];
+		if (card.selected) {
+		    for (j = cardArray.length - 1; j > i; --j) {
+			var preCard = cardArray[j - 1];
+			var curCard = cardArray[j];
+
+			curCard.frame = preCard.frame;
+		    }
+		    cardArray.splice(i, 1);
+		}
+	    }
 	}
 
 
 	
 	return cardGroup;
     }
-
-    // 摸牌模拟，暂时连到“摸牌”button上
-    function touchCard() {
-	cardGroup.appendCard(createCard("r1"));
-	cardGroup.reDraw(ctx);
-    }
-    
 
     // 原始场景尺寸
     var regularWidth = 1024;
@@ -262,10 +289,26 @@ $(document).ready(function() {
 
     // 抬手事件，连到出牌逻辑上
     sence.addEventListener('touchend', function(event){	
-     
+	cardGroup.touchup();
+	cardGroup.reDraw(ctx);
     });
 
 
+    // 摸牌模拟，暂时连到“摸牌”button上
+    function touchCard() {
+	var uno=[
+	    'r0','r1','r2','r3','r4','r5','r6','r7','r8','r9','r+2','r1','r2','r3','r4','r5','r6','r7','r8','r9','r+2',
+	    'y0','y1','y2','y3','y4','y5','y6','y7','y8','y9','y+2','y1','y2','y3','y4','y5','y6','y7','y8','y9','y+2',
+	    'b0','b1','b2','b3','b4','b5','b6','b7','b8','b9','b+2','b1','b2','b3','b4','b5','b6','b7','b8','b9','b+2',
+	    'g0','g1','g2','g3','g4','g5','g6','g7','g8','g9','g+2','g1','g2','g3','g4','g5','g6','g7','g8','g9','g+2',
+	    'w+4','w+4','w+4','w+4'
+	];
+
+	var index = Math.floor(Math.random() * 88);
+	cardGroup.appendCard(createCard(uno[index]));
+	cardGroup.reDraw(ctx);
+    }
+    
     // 临时事件，摸一张牌
     touchCard();
 
