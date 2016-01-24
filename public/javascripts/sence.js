@@ -30,6 +30,7 @@ $(document).ready(function() {
     function drawCard(ctx, card) {
 	var cardframe = jQuery.extend(card.frame);
 	var colorMap = {r:'#d82520', y:'#fff300', b:'#0391dd', g:'#00923d', w: 'black'};
+	var corner = 10;
 
 	// 解卡，卡的颜色，卡的数字
 	var color = colorMap[card.name.slice(0, 1)];
@@ -41,7 +42,7 @@ $(document).ready(function() {
 	}
 	
 	// 画外框
-	cornerRectPath(ctx, cardframe, 10);
+	cornerRectPath(ctx, cardframe, corner);
 	ctx.lineWidth = 1;
 	ctx.strokeStyle = 'black';
 	ctx.stroke();
@@ -56,7 +57,7 @@ $(document).ready(function() {
 	frame.y = cardframe.y + inner;
 	frame.width = cardframe.width - inner * 2;
 	frame.height = cardframe.height - inner * 2;
-	cornerRectPath(ctx, frame, 10);
+	cornerRectPath(ctx, frame, corner * 0.8);
 
 	ctx.fillStyle = color;
 	ctx.fill();
@@ -89,6 +90,74 @@ $(document).ready(function() {
 	ctx.fillStyle = 'white';
 	ctx.fillText(type, -2, 2);
 	ctx.restore()
+
+	var wideInnerWidth = cardframe.width / 3;
+	var wideInnerHeight = wideInnerWidth / 2 * 3;
+
+	// 中间文字
+	if (type == '+2') {
+	    // +2
+	    ctx.save();
+	    ctx.translate(cardframe.x + cardframe.width / 2, cardframe.y + cardframe.height / 2);
+	    ctx.rotate(Math.PI / 6)
+
+	    ctx.shadowColor = 'black';
+	    ctx.shadowOffsetX = 3;
+	    ctx.shadowOffsetY = 3;
+	    ctx.shadowBlur = 1;
+	    
+	    cornerRectPath(ctx, {x : -wideInnerWidth/3, y : -wideInnerHeight / 8 * 6, width : wideInnerWidth, height : wideInnerHeight}, corner / 2);
+	    ctx.fillStyle = color;
+	    ctx.fill();
+	    
+	    cornerRectPath(ctx, {x : -wideInnerWidth / 3 * 2, y : -wideInnerHeight / 8 * 2, width : wideInnerWidth, height : wideInnerHeight}, corner / 2);
+	    ctx.fillStyle = color;
+	    ctx.fill();
+	    ctx.restore();
+	} else if (type == '+4'){
+	    // +4
+	    ctx.save();
+	    ctx.translate(cardframe.x + cardframe.width / 2, cardframe.y + cardframe.height / 2);
+	    ctx.rotate(Math.PI / 6)
+	    
+	    ctx.shadowColor = 'black';
+	    ctx.shadowOffsetX = 3;
+	    ctx.shadowOffsetY = 3;
+	    ctx.shadowBlur = 1;
+	    
+	    cornerRectPath(ctx, {x : -2, y : -wideInnerHeight/2, width : wideInnerWidth, height : wideInnerHeight}, corner / 2)
+	    ctx.fillStyle = colorMap.g;
+	    ctx.fill();
+	    
+	    cornerRectPath(ctx, {x : -wideInnerWidth/3, y : -wideInnerHeight/8, width : wideInnerWidth, height : wideInnerHeight}, corner / 2)
+	    ctx.fillStyle = colorMap.y;
+	    ctx.fill();
+
+	    cornerRectPath(ctx, {x : -wideInnerWidth/3*2, y : -wideInnerHeight/8*7, width : wideInnerWidth, height : wideInnerHeight}, corner / 2)
+	    ctx.fillStyle = colorMap.b;
+	    ctx.fill();
+	    
+	    cornerRectPath(ctx, {x : -wideInnerWidth, y : -wideInnerHeight/2, width : wideInnerWidth, height : wideInnerHeight}, corner / 2)
+	    ctx.fillStyle = colorMap.r;
+	    ctx.fill();
+
+	    ctx.restore()
+
+	} else {
+	    // 0 - 9
+	    ctx.save();
+	    ctx.translate(cardframe.x + cardframe.width / 2, cardframe.y + cardframe.height / 2);
+	    ctx.font = 'italic 60px impact';        // 字体
+	    ctx.textAlign = 'center';       // 水平居中
+	    ctx.textBaseline = 'middle';    // 垂直居中
+	    ctx.shadowColor = 'black';
+	    ctx.shadowOffsetX = 3;
+	    ctx.shadowOffsetY = 3;
+	    ctx.shadowBlur = 1;
+	    ctx.fillStyle = color;
+	    ctx.fillText(type, -7, -2);
+	    ctx.restore()
+	}
     }
 
 
