@@ -102,8 +102,8 @@ $(document).ready(function() {
 	    ctx.rotate(Math.PI / 6)
 
 	    ctx.shadowColor = 'black';
-	    ctx.shadowOffsetX = 3;
-	    ctx.shadowOffsetY = 3;
+	    ctx.shadowOffsetX = 1;
+	    ctx.shadowOffsetY = 1;
 	    ctx.shadowBlur = 1;
 	    
 	    cornerRectPath(ctx, {x : -wideInnerWidth/3, y : -wideInnerHeight / 8 * 6, width : wideInnerWidth, height : wideInnerHeight}, corner / 2);
@@ -121,8 +121,8 @@ $(document).ready(function() {
 	    ctx.rotate(Math.PI / 6)
 	    
 	    ctx.shadowColor = 'black';
-	    ctx.shadowOffsetX = 3;
-	    ctx.shadowOffsetY = 3;
+	    ctx.shadowOffsetX = 1;
+	    ctx.shadowOffsetY = 1;
 	    ctx.shadowBlur = 1;
 	    
 	    cornerRectPath(ctx, {x : -2, y : -wideInnerHeight/2, width : wideInnerWidth, height : wideInnerHeight}, corner / 2)
@@ -151,8 +151,8 @@ $(document).ready(function() {
 	    ctx.textAlign = 'center';       // 水平居中
 	    ctx.textBaseline = 'middle';    // 垂直居中
 	    ctx.shadowColor = 'black';
-	    ctx.shadowOffsetX = 3;
-	    ctx.shadowOffsetY = 3;
+	    ctx.shadowOffsetX = 1;
+	    ctx.shadowOffsetY = 1;
 	    ctx.shadowBlur = 1;
 	    ctx.fillStyle = color;
 	    ctx.fillText(type, -7, -2);
