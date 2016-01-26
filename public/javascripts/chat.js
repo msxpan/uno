@@ -505,20 +505,20 @@ function cardMake(ctx, x, y, color, num) {
 
 
 
-  for (i = 0 ; i < hands.length; ++i ) {
-      // 生成卡片
-      var card = {}
-      card.color = colorArray[hands[i].slice(0,1)];
-      card.num = numArray[hands[i].slice(1)];
-      // card.x = windowHeight*152 + windowHeight*52;
-      card.x = windowWidth/2 - windowHeight*52 * (i-parseInt(hands.length/2)+1.5);
-      card.y = $(window).get(0).innerHeight-windowHeight*218-27*windowHeight;
-      card.width = windowHeight*135;
-      card.height = windowHeight*218;
+  // for (i = 0 ; i < hands.length; ++i ) {
+  //     // 生成卡片
+  //     var card = {}
+  //     card.color = colorArray[hands[i].slice(0,1)];
+  //     card.num = numArray[hands[i].slice(1)];
+  //     // card.x = windowHeight*152 + windowHeight*52;
+  //     card.x = windowWidth/2 - windowHeight*52 * (i-parseInt(hands.length/2)+1.5);
+  //     card.y = $(window).get(0).innerHeight-windowHeight*218-27*windowHeight;
+  //     card.width = windowHeight*135;
+  //     card.height = windowHeight*218;
 
 
-      cardArray.push(card);
-    }
+  //     cardArray.push(card);
+  //   }
 
   
   // 重绘卡片
