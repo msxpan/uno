@@ -1,9 +1,20 @@
+body{
+  overflow: hidden;
+}
+
 #contain{
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
+/*background: url(../images/design.jpg) no-repeat;
+  background-size: 100%;*/
+
+  background: -webkit-linear-gradient(left, #223a52, #3e79a4, #223a52); /* Safari 5.1 - 6.0 */
+  background: -o-linear-gradient(right, #223a52, #3e79a4, #223a52); /* Opera 11.1 - 12.0 */
+  background: -moz-linear-gradient(right, #223a52, #3e79a4, #223a52); /* Firefox 3.6 - 15 */
+  background: linear-gradient(to right, #223a52, #3e79a4, #223a52); /* 标准的语法 */
 }
 #content{
   position: absolute;

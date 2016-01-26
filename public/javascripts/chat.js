@@ -1,3 +1,5 @@
+var windowHeight,windowWidth;
+
 $(document).ready(function() {
   $(window).keydown(function (e) {
     if (e.keyCode == 116) {
@@ -9,11 +11,14 @@ $(document).ready(function() {
 
   var socket = io.connect();
 
-  var colorArray = {r:'#d82520', y:'#fff300', b:'#0391dd', g:'#00923d'};
-  var numArray = new Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9','+2','+4');2
+  var colorArray = {r:'#e10012', y:'#ffdd00', b:'#0188ca', g:'#009a54'};
+  var numArray = new Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9','+2','+4');
   var sence = document.getElementById("sence");
   var ctx = sence.getContext("2d");
-  
+
+
+  windowHeight = $(window).get(0).innerHeight/640;
+  windowWidth = $(window).get(0).innerWidth;
   $('#sence').attr({"width":$(window).get(0).innerWidth,'height':$(window).get(0).innerHeight});  
 
 
@@ -65,7 +70,7 @@ $(document).ready(function() {
 
     $('#play_content a').html('');
 
-    //touchCard(playerHands);	
+    touchCard(playerHands);	
 
 
     console.log(playerHands)
@@ -77,7 +82,7 @@ $(document).ready(function() {
   var XX, YY;
 
   sence.addEventListener('touchstart', function(event) {
-    ctx.clearRect(0, 0, 150, 230);
+    ctx.clearRect(0, 0, windowHeight*135, windowHeight*218);
   })
 
   sence.addEventListener('touchmove', function(event) {
@@ -251,11 +256,11 @@ $(document).ready(function() {
 
 
   // 摸牌
-  //$("#play").click(function() {
-    //发送摸牌请求
-      //socket.emit('touchCard', {from: from, room:roomNum});
-   //   senceTouchCard();
- // });
+  $("#play").click(function() {
+    // 发送摸牌请求
+      socket.emit('touchCard', {from: from, room:roomNum});
+     senceTouchCard();
+ });
 
   socket.on('dealCard', function(data){
       $('#play_content').append($('#play_content a').eq(0).clone(true));
@@ -319,10 +324,11 @@ function touchCard(hands){
       var card = {}
       card.color = colorArray[hands[i].slice(0,1)];
       card.num = numArray[hands[i].slice(1)];
-      card.x = 110 + 90 * i;
-      card.y = $(window).get(0).innerHeight-230-20;
-      card.width = 150;
-      card.height = 230;
+      // card.x = windowHeight*152 + windowHeight*52;
+      card.x = windowWidth/2 - windowHeight*52 * (i-parseInt(hands.length/2)+1.5);
+      card.y = $(window).get(0).innerHeight-windowHeight*218-27*windowHeight;
+      card.width = windowHeight*135;
+      card.height = windowHeight*218;
 
 
       cardArray.push(card);
@@ -364,10 +370,13 @@ function ellipsePath(ctx, centerX, centerY, width, height) {
 
 
 function cardMake(ctx, x, y, color, num) {
-    var width = 150
-    var height = width / 15 * 23
-    var corner = width / 15
-    var inner = corner
+    // var width = 150
+    var width = windowHeight*135;
+    // var height = width / 15 * 23
+    var height = windowHeight*218;
+
+    var corner = width / 15;
+    var inner = corner;
     var innerWidth = width - inner * 2;
     var innerHeight = height - inner * 2;
 
@@ -396,7 +405,7 @@ function cardMake(ctx, x, y, color, num) {
     ctx.save();
     ctx.translate(x + width / 2, y + height / 2);
     ctx.rotate(Math.PI / 6)
-    ellipsePath(ctx, 0, 0, innerWidth * 1.2, innerHeight)
+    ellipsePath(ctx, 0, 0, innerWidth * 1.2, innerHeight*0.9)
     ctx.fillStyle = 'white';
     ctx.fill();
     // ctx.restore()
@@ -404,24 +413,24 @@ function cardMake(ctx, x, y, color, num) {
     if (num=='+4') {
 
       ctx.shadowColor = 'black';
-      ctx.shadowOffsetX = 3;
-      ctx.shadowOffsetY = 3;
+      ctx.shadowOffsetX = 1;
+      ctx.shadowOffsetY = 1;
       ctx.shadowBlur = 1;
 
       cornerRectPath(ctx,0, -wideInnerHeight/2, wideInnerWidth, wideInnerHeight, corner / 2)
-      ctx.fillStyle = '#00923D';
+      ctx.fillStyle = '#009a54';
       ctx.fill();
 
       cornerRectPath(ctx,-wideInnerWidth/3,-wideInnerHeight/8, wideInnerWidth, wideInnerHeight, corner / 2)
-      ctx.fillStyle = '#FFF300';
+      ctx.fillStyle = '#ffdd00';
       ctx.fill();
 
       cornerRectPath(ctx,-wideInnerWidth/3*2, -wideInnerHeight/8*7, wideInnerWidth, wideInnerHeight, corner / 2)
-      ctx.fillStyle = '#0391DD';
+      ctx.fillStyle = '#0188ca';
       ctx.fill();
 
       cornerRectPath(ctx,-wideInnerWidth, -wideInnerHeight/2, wideInnerWidth, wideInnerHeight, corner / 2)
-      ctx.fillStyle = '#D82520';
+      ctx.fillStyle = '#e10012';
       ctx.fill();
 
       ctx.restore()
@@ -429,8 +438,8 @@ function cardMake(ctx, x, y, color, num) {
     }else if (num=='+2') {
 
       ctx.shadowColor = 'black';
-      ctx.shadowOffsetX = 3;
-      ctx.shadowOffsetY = 3;
+      ctx.shadowOffsetX = 1;
+      ctx.shadowOffsetY = 1;
       ctx.shadowBlur = 1;
 
       cornerRectPath(ctx,-wideInnerWidth/3, -wideInnerHeight/8*6, wideInnerWidth, wideInnerHeight, corner / 2)
@@ -448,15 +457,17 @@ function cardMake(ctx, x, y, color, num) {
       // 中间文字
       ctx.save();
       ctx.translate(x + width / 2, y + height / 2);
-      ctx.font = 'italic 70px impact';        // 字体
+
+      ctx.font = 'italic '+windowHeight*70+'px impact';       // 字体
+      // ctx.font='70'
       ctx.textAlign = 'center';       // 水平居中
       ctx.textBaseline = 'middle';    // 垂直居中
       ctx.shadowColor = 'black';
-      ctx.shadowOffsetX = 3;
-      ctx.shadowOffsetY = 3;
+      ctx.shadowOffsetX = 1;
+      ctx.shadowOffsetY = 1;
       ctx.shadowBlur = 1;
       ctx.fillStyle = color;
-      ctx.fillText(num, -10, -5);
+      ctx.fillText(num, -10*windowHeight, -5*windowHeight);
       ctx.restore()
 
     }
@@ -465,7 +476,7 @@ function cardMake(ctx, x, y, color, num) {
     // 两边文字
     ctx.save();
     ctx.translate(x + inner + 10, y + inner + 10);
-    ctx.font = 'italic 20px impact';        // 字体
+    ctx.font = 'italic '+windowHeight*20+'px impact';          // 字体
     ctx.textAlign = 'center';       // 水平居中
     ctx.textBaseline = 'middle';    // 垂直居中
     ctx.fillStyle = 'white';
@@ -475,7 +486,7 @@ function cardMake(ctx, x, y, color, num) {
     ctx.save();
     ctx.translate(x + width - inner - 10, y + height - inner - 10);
     ctx.rotate(Math.PI)
-    ctx.font = 'italic 20px impact';        // 字体
+    ctx.font = 'italic '+windowHeight*20+'px impact';          // 字体
     ctx.textAlign = 'center';       // 水平居中
     ctx.textBaseline = 'middle';    // 垂直居中
     ctx.fillStyle = 'white';
@@ -492,6 +503,23 @@ function cardMake(ctx, x, y, color, num) {
       return false;                          
   }
 
+
+
+  for (i = 0 ; i < hands.length; ++i ) {
+      // 生成卡片
+      var card = {}
+      card.color = colorArray[hands[i].slice(0,1)];
+      card.num = numArray[hands[i].slice(1)];
+      // card.x = windowHeight*152 + windowHeight*52;
+      card.x = windowWidth/2 - windowHeight*52 * (i-parseInt(hands.length/2)+1.5);
+      card.y = $(window).get(0).innerHeight-windowHeight*218-27*windowHeight;
+      card.width = windowHeight*135;
+      card.height = windowHeight*218;
+
+
+      cardArray.push(card);
+    }
+
   
   // 重绘卡片
   function reDrawCard(index) {
@@ -501,9 +529,15 @@ function cardMake(ctx, x, y, color, num) {
       if (i == index) {
         baseY -= 30;
       }
-      cardArray[i].x = 110 + 90 * i;
 
-      cardMake(ctx, 110 + 90 * i, baseY, card.color , card.num);  // 横坐标，纵坐标，颜色，数字 
+    if (cardArray.length%2==0) {
+      cardArray[i].x = windowWidth/2 - windowHeight*52 * (i-parseInt(cardArray.length/2)+2);
+
+    }else{
+      cardArray[i].x = windowWidth/2 - windowHeight*52 * (i-parseInt(cardArray.length/2)+1.5);
+    }
+
+      cardMake(ctx, cardArray[i].x, baseY, card.color , card.num);  // 横坐标，纵坐标，颜色，数字 
     }     
   }   
 
@@ -518,9 +552,13 @@ function cardMake(ctx, x, y, color, num) {
         baseY = 0;
       }
 
-      if (i>index) {
-        baseX = 110 + 90 * i - 90;
+      if (i<index) {        
+        baseX = card.x-windowHeight*26;
       };
+
+      if (i>index) {
+        baseX = card.x+windowHeight*26;
+      }
 
       cardMake(ctx, baseX, baseY, card.color , card.num);  // 横坐标，纵坐标，颜色，数字 
     }     
