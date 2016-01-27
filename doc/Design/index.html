@@ -3,8 +3,8 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<title>usecase</title>
-<!-- 2016-01-22 Fri 01:36 -->
+<title>index</title>
+<!-- 2016-01-27 Wed 22:59 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="lcl" />
@@ -137,7 +137,7 @@ for the JavaScript code in this tag.
 </head>
 <body>
 <div id="content">
-<h1 class="title">usecase</h1>
+<h1 class="title">index</h1>
 <div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
@@ -147,6 +147,17 @@ for the JavaScript code in this tag.
 <ul>
 <li><a href="#sec-2-1">2.1. 客户端</a></li>
 <li><a href="#sec-2-2">2.2. 服务器端</a></li>
+</ul>
+</li>
+<li><a href="#sec-3">3. 时序</a>
+<ul>
+<li><a href="#sec-3-1">3.1. 图例</a></li>
+<li><a href="#sec-3-2">3.2. 说明</a>
+<ul>
+<li><a href="#sec-3-2-1">3.2.1. 客户端实现以下监听事件</a></li>
+<li><a href="#sec-3-2-2">3.2.2. 服务器实现以下监听事件</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -188,10 +199,354 @@ for the JavaScript code in this tag.
 </div>
 </div>
 </div>
+
+<div id="outline-container-sec-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> 时序</h2>
+<div class="outline-text-2" id="text-3">
+</div><div id="outline-container-sec-3-1" class="outline-3">
+<h3 id="sec-3-1"><span class="section-number-3">3.1</span> 图例</h3>
+<div class="outline-text-3" id="text-3-1">
+
+<div class="figure">
+<p><img src="time.png" alt="time.png" />
+</p>
+</div>
+
+
+
+<div class="figure">
+<p><img src="active.png" alt="active.png" />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-3-2" class="outline-3">
+<h3 id="sec-3-2"><span class="section-number-3">3.2</span> 说明</h3>
+<div class="outline-text-3" id="text-3-2">
+</div><div id="outline-container-sec-3-2-1" class="outline-4">
+<h4 id="sec-3-2-1"><span class="section-number-4">3.2.1</span> 客户端实现以下监听事件</h4>
+<div class="outline-text-4" id="text-3-2-1">
+<ol class="org-ol">
+<li>socket.on('addAsCards', function(info))               // 服务器向用户发牌
+
+<p>
+info 格式: ["XX", "XX"]
+</p>
+
+<p>
+收到的牌的张数，由数组个数决定。
+</p>
+
+<p>
++2两张，王牌4张，摸牌1张
+</p>
+
+<p>
+收到牌后更新用户手牌
+</p>
+</li>
+
+<li>socket.on('updateUserCardCount', function(info))      // 更新某一用户的手牌数
+
+<p>
+info 格式: {username : number}
+</p>
+
+<p>
+更新相应用户的手牌数
+</p>
+</li>
+
+<li>socket.on('userUno', function(info))                  // 某一用户uno
+
+<p>
+info 格式: "username"
+</p>
+
+<p>
+相应用户uno 
+</p>
+</li>
+
+<li>socket.on('updateLastCard', function(info))           // 更新出版堆
+
+<p>
+info 格式: "r1"
+</p>
+
+<p>
+出牌堆显示相应牌
+</p>
+
+<p>
+注：如为特殊牌，则显示相应动画，万应牌与王牌的底色，改为选中色
+</p>
+</li>
+
+<li>socket.on('activeByNewTurn', function())              // 轮到当前用户出牌
+
+<p>
+用户可以出牌，摸牌，uno
+</p>
+
+<p>
+用户选择摸牌后，“摸牌”按钮变成“过牌”，用户可过牌
+</p>
+
+<p>
+用户出牌或过牌后，取消激活状态
+</p>
+</li>
+
+<li>socket.on('activeByW+4', function())                  // 当前用户选择是否质疑王牌
+
+<p>
+用户可以选择，质疑，不质疑
+</p>
+
+<p>
+用户选择后，取消激活状态
+</p>
+</li>
+
+<li>socket.on('requireResult', function())                  // 要求用户提供质疑结果
+
+<p>
+emit('uploadResult', true)
+</p>
+</li>
+
+<li>socket.on('statstics', function())                  // 要求用户统计积分
+
+<p>
+emit('uploadScore', 100)
+</p>
+</li>
+
+<li>socket.on('scoreList', function())                  // 展示积分
+
+<p>
+更新各用户积分
+</p>
+</li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-sec-3-2-2" class="outline-4">
+<h4 id="sec-3-2-2"><span class="section-number-4">3.2.2</span> 服务器实现以下监听事件</h4>
+<div class="outline-text-4" id="text-3-2-2">
+<ol class="org-ol">
+<li>socket.on('ready', function())                      // 用户准备
+
+<p>
+如果不足4人，无操作
+</p>
+
+<p>
+如果等于4人，单播各用户emit("addAsCards", ["XX", "XX", "XX", "XX", "XX", "XX", "XX"])
+</p>
+
+<p>
+组播各用户emit('updateUserCardCount', +7)
+</p>
+
+<p>
+组播emit('updateLastCard', "XX")
+</p>
+</li>
+
+<li>socket.on('getCard', function())                      // 激活用户摸牌
+
+<p>
+单播激活用户emit('addAsCards', "XX")
+</p>
+
+<p>
+组播emit('updateUserCardCount', +1)
+</p>
+</li>
+
+<li>socket.on('pass', function())                         // 激活用户过牌
+
+<p>
+直接激活下个用户emit('activeByNetTurn')
+</p>
+</li>
+
+<li>socket.on('uno', function())                          // 激活用户uno
+
+<p>
+组播emit('userUno', "username")
+</p>
+</li>
+
+<li>socket.on('showAHand', function(info))                // 激活用户出牌
+
+<p>
+info 格式: "r1"
+</p>
+
+<p>
+对应出牌逻辑
+</p>
+
+<ol class="org-ol">
+<li>普通牌
+
+<p>
+组播emit('updateUserCardCount', -1)
+</p>
+
+<p>
+组播emit('updateLastCard', "XX")
+</p>
+
+<p>
+单播激活下个用户emit('activeByNetTurn')
+</p>
+</li>
+
+<li>旋转牌
+
+<p>
+变换方向标识
+</p>
+
+<p>
+组播emit('updateUserCardCount', -1)
+</p>
+
+<p>
+组播emit('updateLastCard', "XX")
+</p>
+
+<p>
+单播激活下个用户emit('activeByNetTurn')
+</p>
+</li>
+
+<li>阻挡牌
+
+<p>
+组播emit('updateUserCardCount', -1)
+</p>
+
+<p>
+组播emit('updateLastCard', "XX")
+</p>
+
+<p>
+单播激活第二用户emit('activeByNetTurn')
+</p>
+</li>
+
+<li>+2牌
+
+<p>
+组播emit('updateUserCardCount', -1)
+</p>
+
+<p>
+组播emit('updateLastCard', "XX")
+</p>
+
+<p>
+单播下一用户emit('addAsCards', ["XX", "XX"])
+</p>
+
+<p>
+组播下一用户emit('updateUserCardCount', +2)
+</p>
+
+<p>
+单播激活第二用户emit('activeByNetTurn')
+</p>
+</li>
+
+<li>万用牌
+
+<p>
+组播emit('updateUserCardCount', -1)
+</p>
+
+<p>
+组播emit('updateLastCard', "XX")
+</p>
+
+<p>
+单播激活下一用户emit('activeByNetTurn')
+</p>
+</li>
+
+<li>王牌
+组播emit('updateUserCardCount', -1)
+
+<p>
+组播emit('updateLastCard', "XX")
+</p>
+
+<p>
+单播激活下一用户emit('activeByW+4')
+</p>
+
+<ol class="org-ol">
+<li>不质疑
+
+<p>
+单播下一用户emit('addAsCards', ["XX", "XX", "XX", "XX"])
+</p>
+
+<p>
+组播下一用户emit('updateUserCardCount', +4)
+</p>
+</li>
+
+<li>质疑
+
+<p>
+emit('requireResult') 要求激活用户上传质疑结果
+</p>
+
+<hr  />
+
+<p>
+socket.on('uploadResult', function(info))
+</p>
+
+<p>
+info 格式: true/false
+</p>
+
+<p>
+如果质疑成功，则激活用户emit("addAsCards", ["XX", "XX", "XX", "XX"])
+</p>
+
+<p>
+否则，下一用户emit("addAsCards", ["XX", "XX", "XX", "XX", "XX", "XX"])
+</p>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+
+<li>socket.on('uploadScore', function())                      // 得到积分
+
+<p>
+组播emit('scoreList')
+</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: lcl</p>
-<p class="date">Created: 2016-01-22 Fri 01:36</p>
+<p class="date">Created: 2016-01-27 Wed 22:59</p>
 <p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.5.1 (<a href="http://orgmode.org">Org</a> mode 8.2.10)</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
