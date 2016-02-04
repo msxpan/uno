@@ -11,6 +11,204 @@
 <script type="text/javascript" src="javascripts/chat.js"></script>
 <link type="text/css" rel="stylesheet" href="stylesheets/common.css">
 <link type="text/css" rel="stylesheet" href="stylesheets/chat.css">
+<style type="text/css">
+  .card-bg{
+    width: 150px;
+    height: 230px;
+    /*padding: 10px;*/
+    border: 1px solid #ccc;
+    -webkit-border-radius:8px;
+    -mos-border-radius:8px;
+    border-radius: 8px;
+    -webkit-box-shadow:2px 2px #eee;
+    box-shadow: :2px 2px #eee;
+    cursor: pointer;
+    display: inline-block;
+    /*margin-right: 20px;*/
+    margin-right: -65px;
+
+    transform:rotate(35deg);
+    -webkit-transform:rotate(35deg);
+  }
+
+  .card-col{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    -webkit-border-radius:8px;
+    -mos-border-radius:8px;
+    border-radius: 8px;
+    border:10px solid #fff;
+
+  }
+
+  .card-col.blue{
+    background-color: #0391dd;
+    color: #0391dd;
+  }
+
+  .card-col.black{
+    background-color: #1c1815;
+  }
+  .card-col.green{
+    background-color: #00923d;
+    color: #00923d;
+  }
+
+  .card-col.yellow{
+    background-color: #fff300;
+    color: #fff300;
+  }
+  .card-col.red{
+    background-color: #d82520;
+    color: #d82520;
+  }
+
+  .card-num-up{
+    position: absolute;
+    display: inline-block;
+    width: 40px;
+    height: 28px;
+    padding: 8px 5px;
+    font-family: 'impact';
+    font-size: 22px;
+    color: #fff;
+    transform:rotate(7deg);
+    -webkit-transform:rotate(7deg);
+  }
+
+  .card-num-down{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: inline-block;
+    width: 40px;
+    height: 28px;
+    padding: 8px 5px;
+    font-family: 'impact';
+    font-size: 22px;
+    color: #fff;
+    transform:rotate(187deg);
+    -webkit-transform:rotate(187deg);
+  }
+
+  .card-num-center{
+    position: absolute;
+    top:5px;
+    width: 130px;
+    height: 220px;
+    margin-left: 10px;
+    text-align: center;
+    line-height: 220px;
+    background-color: #fff;
+    border-radius: 65px/110px;
+    transform:rotate(30deg);
+    -webkit-transform:rotate(30deg);
+  }
+
+  .card-num-center em{
+    position: absolute;
+    /*font-size: 100px;*/
+    font-size: 30px;
+    font-family: 'impact';
+    /*text-shadow:3px 3px 3px #666;*/
+    transform:rotate(-30deg);
+    -webkit-transform:rotate(-30deg);
+    margin-left: -36px;
+  }
+
+
+
+
+/* entire container, keeps perspective */
+.flip-container {
+  perspective: 1000;
+  transform-style: preserve-3d;
+}
+  /*  UPDATED! flip the pane when hovered */
+  .start .back {
+    animation:mymove 1s infinite;
+    animation-direction:alternate;
+    -webkit-animation:mymove 1s infinite;
+    -webkit-animation-direction:alternate;
+  }
+  .start .front {
+    animation:mymove 1s infinite;
+    animation-direction:alternate;
+    -webkit-animation:mymove2 1s infinite; 
+    -webkit-animation-direction:alternate;
+  }
+
+
+
+  
+@keyframes mymove
+{
+from {transform:rotateY(0deg);}
+to {transform:rotateY(180deg);}
+}
+
+@-webkit-keyframes mymove /*Safari and Chrome*/
+{
+from {transform:rotateY(0deg);}
+to {transform:rotateY(180deg);}
+}
+
+@keyframes mymove2
+{
+from {transform:rotateY(180deg);}
+to {transform:rotateY(0deg);}
+}
+
+@-webkit-keyframes mymove /*Safari and Chrome*/
+{
+from {transform:rotateY(180deg);}
+to {transform:rotateY(0deg);}
+}
+
+
+
+.flip-container, .front, .back {
+    margin: auto;
+    width: 100px;
+}
+
+/* flip speed goes here */
+.flipper {
+  transition: 0.6s;
+  transform-style: preserve-3d;
+
+  position: relative;
+}
+
+/* hide back of pane during swap */
+.front, .back {
+  backface-visibility: hidden;
+  transition: 0.6s;
+  transform-style: preserve-3d;
+
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/*  UPDATED! front pane, placed above back */
+.front {
+  z-index: 2;
+  transform: rotateY(0deg);
+  /*background: red;*/
+}
+
+/* back, initially hidden pane */
+.back {
+  transform: rotateY(-180deg);
+  /*background: green;*/
+}
+
+
+
+
+</style>
 </head>
 <body>
   <div id="contain">
@@ -28,7 +226,33 @@
     </div>
   </div>
 
-  <!-- <script type="text/javascript" src="javascripts/sence.js"></script> -->
+  <div class="startGame">
+    <div class="flip-container">
+      <div class="flipper">
+        <div class="front">
+          <div class="card-bg" room="room1">
+            <div class="card-col red">
+              <em class="card-num-up">1</em>
+              <div class="card-num-center"><em>准备</em></div>
+              <em class="card-num-down">1</em>  
+            </div>
+          </div>
+        </div>
+        <div class="back">
+         <div class="card-bg" room="room2">
+            <div class="card-col yellow">
+              <em class="card-num-up">2</em>
+              <div class="card-num-center"><em>准备</em></div>
+              <em class="card-num-down">2</em>  
+            </div>
+        </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!--<script type="text/javascript" src="javascripts/sence.js"></script>-->
 </body>
 <script type="text/javascript">
 (function(){
@@ -51,6 +275,11 @@
       li.removeAttr('style');
     }
   });
+
+
+  $('.flip-container').on('click',function(){
+    $(this).addClass('start');
+  })
 })($);
 </script>
 </html>
