@@ -1,0 +1,33 @@
+html
+  head
+    title= '大厅'
+    meta(name='viewport', content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no')
+    link(rel='stylesheet', href='/stylesheets/halls.css')
+    script(type='text/javascript', src='javascripts/jquery.min.js')
+  body
+    .card-bg(room='1')
+      .card-col.red
+        em.card-num-up 1
+        .card-num-center
+          em 1    
+        em.card-num-down 1
+    .card-bg(room='2')
+      .card-col.yellow
+        em.card-num-up 2    
+        .card-num-center
+          em 2
+        em.card-num-down 2
+    .card-bg(room='3')
+      .card-col.blue
+        em.card-num-up 3
+        .card-num-center
+          em 3
+        em.card-num-down 3
+    .card-bg(room='4')
+      .card-col.green
+        em.card-num-up 4
+        .card-num-center
+          em 4
+        em.card-num-down 4
+
+    script(type='text/javascript', src='javascripts/halls.js')

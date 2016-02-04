@@ -1,0 +1,16 @@
+html
+  head
+    title= '登录'
+    link(rel='stylesheet', href='/stylesheets/signin.css')
+    link(rel='stylesheet', href='/stylesheets/common.css')
+  body
+    div#content
+      form(style='margin-top:70px;', method='post')
+        .form_line
+          .form_label 昵称：
+          input(type='text', name='name')
+        .form_line
+          .form_label
+          button.button.gray(type='submit') 登录
+          button.button.gray(type='reset') 取消
+

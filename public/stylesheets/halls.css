@@ -1,0 +1,99 @@
+.card-bg{
+    width: 150px;
+    height: 230px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    -webkit-border-radius:8px;
+    -mos-border-radius:8px;
+    border-radius: 8px;
+    -webkit-box-shadow:2px 2px #eee;
+    box-shadow: :2px 2px #eee;
+    cursor: pointer;
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.card-col{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    -webkit-border-radius:8px;
+    -mos-border-radius:8px;
+    border-radius: 8px;
+
+}
+
+.card-col.blue{
+    background-color: #0391dd;
+    color: #0391dd;
+
+}
+
+.card-col.black{
+    background-color: #1c1815;
+}
+.card-col.green{
+    background-color: #00923d;
+    color: #00923d;
+}
+
+.card-col.yellow{
+    background-color: #fff300;
+    color: #fff300;
+}
+.card-col.red{
+    background-color: #d82520;
+    color: #d82520;
+}
+
+.card-num-up{
+    position: absolute;
+    display: inline-block;
+    width: 40px;
+    height: 28px;
+    padding: 8px 5px;
+    font-family: 'impact';
+    font-size: 22px;
+    color: #fff;
+    transform:rotate(7deg);
+    -webkit-transform:rotate(7deg);
+}
+
+.card-num-down{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: inline-block;
+    width: 40px;
+    height: 28px;
+    padding: 8px 5px;
+    font-family: 'impact';
+    font-size: 22px;
+    color: #fff;
+    transform:rotate(187deg);
+    -webkit-transform:rotate(187deg);
+}
+
+.card-num-center{
+    position: absolute;
+    top:5px;
+    width: 130px;
+    height: 220px;
+    margin-left: 10px;
+    text-align: center;
+    line-height: 220px;
+    background-color: #fff;
+    border-radius: 65px/110px;
+    transform:rotate(30deg);
+    -webkit-transform:rotate(30deg);
+}
+
+.card-num-center em{
+    position: absolute;
+    font-size: 100px;
+    font-family: 'impact';
+    text-shadow:3px 3px 3px #666;
+    transform:rotate(-30deg);
+    -webkit-transform:rotate(-30deg);
+    margin-left: -36px;
+}
